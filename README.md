@@ -1,26 +1,47 @@
 FuturesStrengthAnalyzer/
-├── data/                   # 存放数据文件
-│   ├── rb2505.csv         # 示例数据：近月合约
-│   └── rb2510.csv         # 示例数据：远月合约
-├── src/                   # 源代码目录
-│   ├── __init__.py        # 标记为Python包
-│   ├── data_processor.py  # 数据预处理模块
-│   ├── features/          # 特征提取模块
+├── data/
+│   ├── rb2505.csv
+│   ├── rb2510.csv
+│   ├── hc2505.csv
+├── results/
+├── src/
+│   ├── __init__.py
+│   ├── data_processor.py
+│   ├── features/
 │   │   ├── __init__.py
-│   │   ├── extractor.py   # 特征提取器
-│   │   └── features.py    # 具体特征实现
-│   ├── scoring/           # 打分法模块
+│   │   ├── extractor.py
+│   │   ├── features.py
+│   │   └── labelers.py
+│   ├── scoring/          # 打分法
 │   │   ├── __init__.py
-│   │   ├── evaluator.py   # 打分评估器
-│   │   └── analyses.py    # 具体分析方法
-│   ├── ml/                # 机器学习模块
+│   │   ├── evaluator.py
+│   │   └── analyses.py
+│   ├── ml/              # 机器学习
 │   │   ├── __init__.py
-│   │   ├── predictor.py   # ML预测器
-│   │   └── models.py      # 具体ML模型
-│   ├── recommender.py     # 交易建议模块
-│   └── main.py            # 主程序
-├── config.json            # 配置文件
-└── README.md              # 项目说明
+│   │   ├── predictor.py
+│   │   └── models.py
+│   ├── stats/           # 新增：统计方法
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── timeseries/      # 新增：时间序列分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rules/           # 新增：基于规则的专家系统
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rsi/             # 新增：RSI对比
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── pca/             # 新增：主成分分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── deeplearning/    # 新增：深度学习（基础实现）
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── recommender.py
+│   └── main.py
+├── config.json
+└── README.md
 
 
 # Futures Strength Analyzer

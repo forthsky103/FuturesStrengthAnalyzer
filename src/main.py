@@ -1,72 +1,30 @@
 # src/main.py
 import json
-from .data_processor import DataProcessor
-from .features.extractor import FeatureExtractor
-from .features.features import TrendFeature, VolumeFeature, SpreadFeature
-from .features.labelers import ReturnBasedLabeler, VolumeBasedLabeler, VolatilityBasedLabeler
-from .scoring.evaluator import StrengthEvaluator
-from .scoring.analyses import TrendAnalysis, VolumeAnalysis
-from .ml.predictor import MLPredictor
-from .ml.models import RandomForestModel
-from .recommender import TradeRecommender
+import logging
+from .logging_utils import setup_logging
+from scoring.main_scoring import main_scoring
+from ml.main_ml import main_ml
+from recommender import ScoringTradeRecommender, MLTradeRecommender  # 根据需要导入其他推荐器
 
-def main():
-    # 加载配置
-    with open("../config.json", "r") as f:
+def main(config_path="../config.json"):
+    setup_logging(log_file_path="../results/combined_log.log", level=logging.INFO)
+    logging.info("开始运行综合 Main 方法")
+
+    with open(config_path, "r") as f:
         config = json.load(f)
 
-    # 数据加载与对齐
-    processors = [DataProcessor(f"../data/{path}") for path in config["data_files"]]
-    datasets = [p.clean_data() for p in processors]
-    symbols = [path.split('.')[0] for path in config["data_files"]]
-    for i, data in enumerate(datasets):
-        data.set_index('date', inplace=True)
-    common_index = datasets[0].index
-    for data in datasets[1:]:
-        common_index = common_index.intersection(data.index)
-    datasets = [data.loc[common_index].reset_index() for data in datasets]
-
-    # 评估
-    if config["method"] == "scoring":
-        modules = [TrendAnalysis(), VolumeAnalysis()]
-        evaluator = StrengthEvaluator(modules, config["weights"])
-        results = evaluator.evaluate(datasets)
-        print("得分结果:")
-        for contract, score in results.items():
-            print(f"{symbols[int(contract[-1])-1]}: {score:.2f}")
-    else:
-        selected_features = [
-            TrendFeature(window=20),
-            VolumeFeature(window=20),
-            SpreadFeature()
-        ]
-        # 动态选择标签生成器
-        labeler_type = config.get("labeler", "return")  # 默认使用收益率
-        if labeler_type == "return":
-            labeler = ReturnBasedLabeler(window=20)
-        elif labeler_type == "volume":
-            labeler = VolumeBasedLabeler(window=20)
-        elif labeler_type == "volatility":
-            labeler = VolatilityBasedLabeler(window=20)
+    methods = config.get("methods", ["scoring"])
+    for method in methods:
+        if method == "scoring":
+            logging.info("运行 Scoring 方法")
+            main_scoring(config_path, "src/scoring/scoring_config.json")
+        elif method == "ml":
+            logging.info("运行 ML 方法")
+            main_ml(config_path, "src/ml/ml_config.json")
         else:
-            raise ValueError(f"未知的标签生成器: {labeler_type}")
-        
-        extractor = FeatureExtractor(selected_features)
-        features = extractor.extract_features(datasets, labeler=labeler)
-        feature_cols = [col for col in features.columns if not col.startswith('label')]
-        
-        models = [RandomForestModel() for _ in datasets]
-        predictor = MLPredictor(models, feature_cols)
-        predictor.train(features)
-        results = predictor.predict(features)
-        print("预测结果:")
-        for contract, pred in results.items():
-            print(f"{symbols[int(contract[-1])-1]}: {pred}")
+            logging.warning(f"未知方法: {method}")
 
-    # 交易建议
-    recommender = TradeRecommender(config["market_direction"])
-    advice = recommender.recommend(results, config["method"], symbols)
-    print(f"交易建议: {advice}")
+    logging.info("综合 Main 方法运行完成")
 
 if __name__ == "__main__":
     main()
