@@ -15,5 +15,9 @@
         "intraday_price_elasticity_10", "price_trend_persistence_20"
     ],
     "window": 20,
-    "model_type": "stacking"
+    "model_type": "stacking",
+    "base_model": "lightgbm",
+    "recommend_mode": "combined_score",
+    "prob_weight": 0.8,
+    "auc_weight": 0.2
 }
