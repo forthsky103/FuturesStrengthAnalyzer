@@ -1,0 +1,11 @@
+{
+    "method": "ml",
+    "ml_model": "rf",
+    "market_direction": "up",
+    "labeler": "return",  
+    "weights": {
+        "TrendAnalysis": 2.0,
+        "VolumeAnalysis": 1.0
+    },
+    "data_files": ["rb2505.csv", "rb2510.csv", "hc2505.csv"]
+}
