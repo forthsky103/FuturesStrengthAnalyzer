@@ -35,5 +35,15 @@
         "PriceStructureComplexityAnalysis": 1.0,
         "VolumePressureDistributionAnalysis": 1.0,
         "PriceTrendRotationAnalysis": 1.0
-    }
+    },
+    "enable_feature_selection": false,
+    "manual_features": [
+        "PriceTrendAccelerationAnalysis",
+        "IntradayVolatilityAnalysis",
+        "PriceSkewnessAnalysis",
+        "PriceMomentumDivergenceAnalysis",
+        "PriceVolatilityCycleAnalysis",
+        "labeler_type": "ReturnBasedLabeler"
+    ],
+    "labeler_window": 20
 }

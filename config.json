@@ -1,5 +1,0 @@
-{
-    "data_groups": [["SHFE.rb2510.csv", "SHFE.rb2505.csv"]],
-    "market_direction": "up",
-    "methods": ["scoring"]
-}

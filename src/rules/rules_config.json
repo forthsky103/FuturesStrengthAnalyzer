@@ -1,0 +1,79 @@
+{
+    "rules": {
+        "BreakoutMARule": {"window": 20, "volatility_factor": 0.01},
+        "VolumeIncreaseRule": {"window": 20},
+        "PositionTrendRule": {"window": 20},
+        "VolatilityExpansionRule": {"window": 20},
+        "UptrendRule": {"short_window": 5, "mid_window": 20, "long_window": 50},
+        "RSIAbove50Rule": {},
+        "MACDPositiveAndAboveSignalRule": {},
+        "PriceAboveBollingerUpperRule": {"window": 20},
+        "TrendReversalRule": {"window": 20},
+        "VolumeSpikeRule": {"window": 20, "threshold": 2.0},
+        "PriceBreakoutHighRule": {"window": 20},
+        "MACDGoldenCrossRule": {},
+        "VolatilityContractionRule": {"window": 5}
+    },
+    "weights": {
+        "BreakoutMARule": 1.0,
+        "VolumeIncreaseRule": 0.8,
+        "PositionTrendRule": 0.7,
+        "VolatilityExpansionRule": 0.6,
+        "UptrendRule": 1.5,
+        "RSIAbove50Rule": 1.2,
+        "MACDPositiveAndAboveSignalRule": 1.5,
+        "PriceAboveBollingerUpperRule": 1.0,
+        "TrendReversalRule": 1.2,
+        "VolumeSpikeRule": 0.9,
+        "PriceBreakoutHighRule": 1.0,
+        "MACDGoldenCrossRule": 1.3,
+        "VolatilityContractionRule": 0.8
+    },
+    "auto_weights": false,
+    "market_conditions": [
+        {
+            "type": "HighVolatilityCondition",
+            "adjustments": {
+                "VolatilityExpansionRule": 1.5,
+                "PriceAboveBollingerUpperRule": 1.5,
+                "VolatilityContractionRule": 1.2
+            }
+        },
+        {
+            "type": "TrendMarketCondition",
+            "adjustments": {
+                "UptrendRule": 1.3,
+                "MACDPositiveAndAboveSignalRule": 1.3,
+                "PriceBreakoutHighRule": 1.3,
+                "MACDGoldenCrossRule": 1.3
+            }
+        },
+        {
+            "type": "RangeMarketCondition",
+            "adjustments": {
+                "RSIAbove50Rule": 1.2,
+                "TrendReversalRule": 1.2,
+                "VolumeSpikeRule": 1.2
+            }
+        }
+    ],
+    "dependencies": {
+        "BreakoutMARule": {
+            "requires": ["VolumeIncreaseRule", "PositionTrendRule"],
+            "logic": "or",
+            "boost": 1.5
+        },
+        "UptrendRule": {
+            "requires": [
+                {"rule": "MACDPositiveAndAboveSignalRule", "requires": ["RSIAbove50Rule"], "logic": "and"}
+            ],
+            "logic": "and",
+            "boost": 1.3
+        },
+        "RSIAbove50Rule": {
+            "requires": ["TrendReversalRule"],
+            "logic": "not",
+            "boost": 0.5
+        }
+    }
+}

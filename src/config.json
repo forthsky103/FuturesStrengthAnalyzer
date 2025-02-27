@@ -1,0 +1,5 @@
+{
+    "data_groups": [["rb2510.csv", "rb2505.csv", "hc2505.csv"]],
+    "market_direction": "up",
+    "methods": ["ml"]
+}

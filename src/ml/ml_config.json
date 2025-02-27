@@ -1,23 +1,17 @@
 {
-    "features": [
-        "close", "volume", "spread", "position", "amount",
-        "price_acceleration_20", "intraday_volatility_ratio_10", "price_skewness_20",
-        "price_kurtosis_20", "price_entropy_20", "volume_pressure_20",
-        "position_volatility_20", "price_momentum_20", "intraday_price_range_10",
-        "price_cycle_amplitude_20", "price_shadow_asymmetry_10", "turnover_efficiency_20",
-        "price_velocity_10", "intraday_pivot_strength_10", "price_fractal_dimension_20",
-        "amount_velocity_20", "price_elasticity_20", "volatility_cycle_20",
-        "price_mean_distance_20", "intraday_price_symmetry_10", "volume_momentum_20",
-        "price_wavelet_energy_20", "position_acceleration_20", "price_density_20",
-        "intraday_price_velocity_10", "price_rotation_frequency_20", "volume_price_correlation_20",
-        "price_breakout_strength_20", "intraday_price_center_10", "price_harmonic_amplitude_20",
-        "amount_pressure_20", "position_momentum_20", "price_spike_frequency_20",
-        "intraday_price_elasticity_10", "price_trend_persistence_20"
+    "weights": {
+        "PriceMomentumFeature": 1.0,
+        "VolumePressureFeature": 1.0,
+        "PriceVelocityFeature": 1.0
+    },
+    "enable_feature_selection": false,
+    "manual_features": [
+        "PriceMomentumFeature",
+        "VolumePressureFeature",
+        "PriceVelocityFeature"
     ],
-    "window": 20,
-    "model_type": "stacking",
-    "base_model": "lightgbm",
-    "recommend_mode": "combined_score",
-    "prob_weight": 0.8,
-    "auc_weight": 0.2
+    "labeler_type": "ReturnBasedLabeler",
+    "labeler_window": 20,
+    "model_type": "random_forest",
+    "recommend_mode": "probability"
 }

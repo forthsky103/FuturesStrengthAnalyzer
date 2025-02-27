@@ -1,0 +1,3565 @@
+您好，我有一个项目需要您帮我一起完善他，我把项目的目录机构及各个目录下所需要的文件，上传给您，您读取下记录，然后我们一起来完善他，非常感谢您。
+
+1：项目目录是这样的：
+
+FuturesStrengthAnalyzer/
+├── data/
+│   ├── rb2505.csv
+│   ├── rb2510.csv
+│   ├── hc2505.csv
+├── results/
+├── src/
+│   ├── __init__.py
+│   ├── data_processor.py
+│   ├── features/
+│   │   ├── __init__.py
+│   │   ├── extractor.py
+│   │   ├── features.py
+│   │   └── labelers.py
+│ 	│__ |__data_avquisition/
+		|___juejin_data_downloader.py
+│   ├── scoring/          # 打分法
+│   │   ├── __init__.py
+│   │   ├── evaluator.py
+│   │   └── analyses.py
+│   ├── ml/              # 机器学习
+│   │   ├── __init__.py
+│   │   ├── predictor.py
+│   │   └── models.py
+│   ├── stats/           # 新增：统计方法
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── timeseries/      # 新增：时间序列分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rules/           # 新增：基于规则的专家系统
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rsi/             # 新增：RSI对比
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── pca/             # 新增：主成分分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── deeplearning/    # 新增：深度学习（基础实现）
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── recommender.py
+│   └── main.py
+├── config.json
+└── README.md
+
+
+2：README.md文件内容是
+# Futures Strength Analyzer
+
+一个用于分析期货合约强弱的项目，支持打分法和机器学习方法。
+
+ 目录结构
+
+FuturesStrengthAnalyzer/
+├── data/
+│   ├── rb2505.csv
+│   ├── rb2510.csv
+│   ├── hc2505.csv
+├── results/
+├── src/
+│   ├── __init__.py
+│   ├── data_processor.py
+│   ├── features/
+│   │   ├── __init__.py
+│   │   ├── extractor.py
+│   │   ├── features.py
+│   │   └── labelers.py
+│   ├── scoring/          # 打分法
+│   │   ├── __init__.py
+│   │   ├── evaluator.py
+│   │   └── analyses.py
+│   ├── ml/              # 机器学习
+│   │   ├── __init__.py
+│   │   ├── predictor.py
+│   │   └── models.py
+│   ├── stats/           # 新增：统计方法
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── timeseries/      # 新增：时间序列分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rules/           # 新增：基于规则的专家系统
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── rsi/             # 新增：RSI对比
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── pca/             # 新增：主成分分析
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── deeplearning/    # 新增：深度学习（基础实现）
+│   │   ├── __init__.py
+│   │   └── evaluator.py
+│   ├── recommender.py
+│   └── main.py
+├── config.json
+└── README.md
+
+
+# Futures Strength Analyzer
+
+一个用于分析期货合约强弱的项目，支持打分法和机器学习方法。
+
+## 目录结构
+- `data/`: 数据文件存放目录
+- `src/`: 源代码目录
+  - `data_processor.py`: 数据预处理
+  - `features/`: 特征提取模块
+  - `scoring/`: 打分法模块
+  - `ml/`: 机器学习模块
+  - `recommender.py`: 交易建议
+  - `main.py`: 主程序
+
+## 使用方法
+1. 将数据放入 `data/` 目录。
+2. 修改 `config.json` 配置方法和参数。
+3. 运行 `python src/main.py`。
+
+## 依赖
+- pandas
+- numpy
+- scikit-learn
+- xgboost
+
+3：config.json文件内容是这样的：
+{
+    "data_groups": [["SHFE.rb2510.csv", "SHFE.rb2505.csv"]],
+    "market_direction": "up",
+    "methods": ["scoring"]
+}
+
+4：/src/data_processor.py文件内容是这样的
+import pandas as pd
+
+class DataProcessor:
+    def __init__(self, file_path: str):
+        self.data = pd.read_csv(file_path)
+        self.data['date'] = pd.to_datetime(self.data['date'])
+    
+    def clean_data(self) -> pd.DataFrame:
+        self.data = self.data.dropna().sort_values('date')
+        return self.data
+    
+    def get_latest_data(self, periods: int = None) -> pd.DataFrame:
+        return self.data.tail(periods) if periods else self.data
+		
+5：logging_utils.py文件的内容是：
+# src/logging_utils.py
+import logging
+import os
+
+def setup_logging(log_file_path: str = "results/app.log", level: int = logging.INFO):
+    """
+    配置日志，输出到文件和控制台。
+    
+    Args:
+        log_file_path (str): 日志文件路径，默认为 "results/app.log"。
+        level (int): 日志级别，默认为 INFO。
+    """
+    # 确保日志目录存在
+    os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
+
+    # 创建日志格式
+    log_format = '%(asctime)s - %(levelname)s - %(message)s'
+    formatter = logging.Formatter(log_format)
+
+    # 创建文件处理器
+    file_handler = logging.FileHandler(log_file_path)
+    file_handler.setFormatter(formatter)
+
+    # 创建控制台处理器
+    console_handler = logging.StreamHandler()
+    console_handler.setFormatter(formatter)
+
+    # 配置全局日志
+    logging.basicConfig(level=level, handlers=[file_handler, console_handler])
+
+    logging.info("日志配置完成")
+
+6：main.py的内容是：# src/main.py
+# src/main.py
+import json
+import logging
+from .logging_utils import setup_logging
+from scoring.main_scoring import main_scoring
+from ml.main_ml import main_ml
+from recommender import ScoringTradeRecommender, MLTradeRecommender  # 根据需要导入其他推荐器
+
+def main(config_path="config.json"):  # 修改为同级目录路径
+    setup_logging(log_file_path="../results/combined_log.log", level=logging.INFO)
+    logging.info("开始运行综合 Main 方法")
+
+    with open(config_path, "r") as f:
+        config = json.load(f)
+
+    methods = config.get("methods", ["scoring"])
+    for method in methods:
+        if method == "scoring":
+            logging.info("运行 Scoring 方法")
+            main_scoring(config_path, "src/scoring/scoring_config.json")
+        elif method == "ml":
+            logging.info("运行 ML 方法")
+            main_ml(config_path, "src/ml/ml_config.json")
+        else:
+            logging.warning(f"未知方法: {method}")
+
+    logging.info("综合 Main 方法运行完成")
+
+if __name__ == "__main__":
+    main()
+	
+7：/src/recommender.py文件内容是：
+# src/recommender.py
+from typing import Union, Dict, List
+import pandas as pd
+from datetime import datetime
+import abc
+
+class TradeRecommender(abc.ABC):
+    """交易推荐基类"""
+    def __init__(self, market_direction: str):
+        self.direction = market_direction.lower()
+
+    @abc.abstractmethod
+    def recommend(self, results: Dict[str, Union[float, str]], method: str, symbols: List[str], group_idx: int, datasets: List[pd.DataFrame] = None) -> str:
+        """生成交易建议"""
+        pass
+
+    def _save_results(self, result_data: pd.DataFrame, group_idx: int) -> str:
+        """保存结果到 CSV 文件"""
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        filename = f"../results/result_group_{group_idx + 1}_{timestamp.replace(':', '').replace(' ', '_')}.csv"
+        result_data.to_csv(filename, index=False)
+        print(f"结果已保存至: {filename}")
+        return filename
+
+class ScoringTradeRecommender(TradeRecommender):
+    """打分法推荐器"""
+    def recommend(self, results: Dict[str, float], method: str, symbols: List[str], group_idx: int, datasets: List[pd.DataFrame] = None) -> str:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        scores = {symbols[int(k[-1]) - 1]: v for k, v in results.items()}
+        strongest = max(scores, key=scores.get)
+        weakest = min(scores, key=scores.get)
+        
+        if self.direction == 'up':
+            advice = f"做多 {strongest}（得分: {scores[strongest]:.4f}），做空 {weakest}（得分: {scores[weakest]:.4f}）"
+        elif self.direction == 'down':
+            advice = f"做空 {weakest}（得分: {scores[weakest]:.4f}），做多 {strongest}（得分: {scores[strongest]:.4f}）"
+        else:
+            advice = "市场震荡，建议观望"
+
+        result_data = pd.DataFrame({
+            "timestamp": [timestamp] * len(symbols),
+            "group_id": [group_idx + 1] * len(symbols),
+            "symbol": symbols,
+            "score": [scores[symbol] for symbol in symbols],
+            "is_strongest": [symbol == strongest for symbol in symbols],
+            "is_weakest": [symbol == weakest for symbol in symbols],
+            "market_direction": [self.direction] * len(symbols)
+        })
+        self._save_results(result_data, group_idx)
+        return advice
+
+class MLTradeRecommender(TradeRecommender):
+    """机器学习推荐器"""
+    def recommend(self, results: Dict[str, Union[float, str]], method: str, symbols: List[str], group_idx: int, datasets: List[pd.DataFrame] = None) -> str:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        preds = {symbols[int(k[-1]) - 1]: v for k, v in results.items()}
+        
+        # 转换为 strong/weak 标签（若传入概率则需在外部处理）
+        if isinstance(list(preds.values())[0], float):
+            raise ValueError("MLTradeRecommender 期望 'strong' 或 'weak' 标签，请在 main_ml.py 中预处理概率")
+        strongest = next(symbol for symbol, pred in preds.items() if pred == 'strong')
+        weakest = next(symbol for symbol, pred in preds.items() if pred == 'weak')
+        
+        if self.direction == 'up':
+            advice = f"做多 {strongest}（预测: {preds[strongest]}），做空 {weakest}（预测: {preds[weakest]}）"
+        elif self.direction == 'down':
+            advice = f"做空 {weakest}（预测: {preds[weakest]}），做多 {strongest}（预测: {preds[strongest]}）"
+        else:
+            advice = "市场震荡，建议观望"
+
+        result_data = pd.DataFrame({
+            "timestamp": [timestamp] * len(symbols),
+            "group_id": [group_idx + 1] * len(symbols),
+            "symbol": symbols,
+            "prediction": [preds[symbol] for symbol in symbols],
+            "is_strongest": [symbol == strongest for symbol in symbols],
+            "is_weakest": [symbol == weakest for symbol in symbols],
+            "market_direction": [self.direction] * len(symbols)
+        })
+        self._save_results(result_data, group_idx)
+        return advice
+
+class DeepLearningTradeRecommender(TradeRecommender):
+    """深度学习推荐器"""
+    def recommend(self, results: Dict[str, float], method: str, symbols: List[str], group_idx: int, datasets: List[pd.DataFrame] = None) -> str:
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        scores = {symbols[int(k[-1]) - 1]: v for k, v in results.items()}
+        strongest = max(scores, key=scores.get)
+        weakest = min(scores, key=scores.get)
+        
+        if self.direction == 'up':
+            advice = f"做多 {strongest}（DL概率: {scores[strongest]:.4f}），做空 {weakest}（DL概率: {scores[weakest]:.4f}）"
+        elif self.direction == 'down':
+            advice = f"做空 {weakest}（DL概率: {scores[weakest]:.4f}），做多 {strongest}（DL概率: {scores[strongest]:.4f}）"
+        else:
+            advice = "市场震荡，建议观望"
+
+        result_data = pd.DataFrame({
+            "timestamp": [timestamp] * len(symbols),
+            "group_id": [group_idx + 1] * len(symbols),
+            "symbol": symbols,
+            "dl_probability": [scores[symbol] for symbol in symbols],
+            "is_strongest": [symbol == strongest for symbol in symbols],
+            "is_weakest": [symbol == weakest for symbol in symbols],
+            "market_direction": [self.direction] * len(symbols)
+        })
+        self._save_results(result_data, group_idx)
+        return advice
+
+8：/src/data_acquisition/juejin_data_downloader.py中文件的内容是这样的
+# src/data_acquisition/juejin_data_downloader.py
+
+import pandas as pd
+from gm.api import set_token, history
+from typing import Optional
+import os
+from datetime import datetime
+
+# 设置掘金量化平台的 API Token
+API_TOKEN = 'f0609484d5bdc4f7bdf8f7d11d21fb6f8e7cace0'
+set_token(API_TOKEN)
+
+def generate_filename(symbol: str, data_type: str, start_time: str, end_time: str) -> str:
+    """
+    根据参数自动生成文件名
+
+    Args:
+        symbol: 合约代码，例如 'SHFE.rb2505'
+        data_type: 数据类型，例如 '5m', 'tick'
+        start_time: 开始时间
+        end_time: 结束时间
+
+    Returns:
+        str: 生成的文件名，格式为 'data/symbol_datatype_starttime_endtime.csv'
+    """
+    # 提取合约代码中的具体代号（例如从'SHFE.rb2505'提取'rb2505'）
+    contract = symbol.split('.')[-1]
+    
+    # 格式化时间字符串，移除特殊字符
+    start = start_time.replace('-', '').replace(':', '').replace(' ', '')[:12]
+    end = end_time.replace('-', '').replace(':', '').replace(' ', '')[:12]
+    
+    # 确保data目录存在
+    os.makedirs('data', exist_ok=True)
+    
+    # 生成文件名
+    return f'../../data/{contract}_{data_type}_{start}_{end}.csv'
+
+def download_bar_data(symbol: str, 
+                     start_time: str, 
+                     end_time: str,
+                     frequency: str = '1m') -> None:
+    """
+    下载K线数据并进行处理
+
+    Args:
+        symbol: 合约代码，例如 'SHFE.rb2005'
+        start_time: 开始时间，格式为 'YYYY-MM-DD' 或 'YYYY-MM-DD HH:MM:SS'
+        end_time: 结束时间，格式为 'YYYY-MM-DD' 或 'YYYY-MM-DD HH:MM:SS'
+        frequency: K线周期，例如 '1m', '5m', '1d' 等
+    """
+    try:
+        # 生成文件名
+        filename = generate_filename(symbol, frequency, start_time, end_time)
+        
+        data = history(
+            symbol=symbol,
+            frequency=frequency,
+            start_time=start_time,
+            end_time=end_time,
+            df=True
+        )
+
+        if data.empty:
+            print(f"未能获取到 {symbol} 在 {start_time} 到 {end_time} 期间的 {frequency} K线数据")
+            return
+
+        # 数据处理
+        data = data.rename(columns={'bob': 'date'})  # 仅重命名时间戳列
+        data['date'] = data['date'].dt.strftime('%Y-%m-%d %H:%M:%S')
+        
+        # 需要删除的列（保留position和volume）
+        columns_to_drop = ['eob', 'pre_close']  # 不要删除close列
+        for col in columns_to_drop:
+            if col in data.columns:
+                data = data.drop(col, axis=1)
+        
+        cols = ['date'] + [col for col in data.columns if col != 'date']
+        data = data[cols]
+
+        # 保存处理后的数据
+        data.to_csv(filename, index=False)
+        print(f"成功下载并处理 {symbol} 的 {frequency} K线数据:")
+        print(f"数据大小: {data.shape}")
+        print(f"时间范围: {data['date'].iloc[0]} 到 {data['date'].iloc[-1]}")
+        print(f"保存至: {filename}")
+        print(f"列名顺序: {', '.join(data.columns)}")
+
+    except Exception as e:
+        print(f"下载或处理 {symbol} 的 {frequency} K线数据时发生错误: {str(e)}")
+        raise
+
+def download_tick_data(symbol: str, 
+                      start_time: str, 
+                      end_time: str) -> None:
+    """
+    下载Tick数据并进行处理
+
+    Args:
+        symbol: 合约代码，例如 'SHFE.rb2005'
+        start_time: 开始时间，格式为 'YYYY-MM-DD' 或 'YYYY-MM-DD HH:MM:SS'
+        end_time: 结束时间，格式为 'YYYY-MM-DD' 或 'YYYY-MM-DD HH:MM:SS'
+    """
+    try:
+        filename = generate_filename(symbol, 'tick', start_time, end_time)
+        
+        data = history(
+        symbol=symbol,
+            frequency='tick',
+        start_time=start_time,
+        end_time=end_time,
+            df=True
+        )
+
+        if data.empty:
+            print(f"未能获取到 {symbol} 在 {start_time} 到 {end_time} 期间的Tick数据")
+            return
+
+        # 数据处理
+        # 1. 重命名列
+        data = data.rename(columns={
+            'created_at': 'date',
+            'price': 'close'  # 添加price到close的重命名
+        })
+        
+        # 2. 处理时间格式
+        data['date'] = data['date'].dt.strftime('%Y-%m-%d %H:%M:%S.%f')
+        
+        # 3. 处理quotes字段
+        if 'quotes' in data.columns:
+            quotes_df = pd.DataFrame([q[0] if isinstance(q, list) and q else {} for q in data['quotes']])
+            for col in quotes_df.columns:
+                data[col] = quotes_df[col]
+            data = data.drop('quotes', axis=1)
+
+        # 4. 删除不需要的列
+        columns_to_drop = ['iopv', 'trade_type', 'flag']
+        for col in columns_to_drop:
+            if col in data.columns:
+                data = data.drop(col, axis=1)
+        
+        # 5. 重排列顺序，确保date在第一列
+        cols = ['date'] + [col for col in data.columns if col != 'date']
+        data = data[cols]
+
+        # 保存处理后的数据
+        data.to_csv(filename, index=False)
+        print(f"成功下载并处理 {symbol} 的Tick数据:")
+        print(f"数据大小: {data.shape}")
+        print(f"时间范围: {data['date'].iloc[0]} 到 {data['date'].iloc[-1]}")
+        print(f"保存至: {filename}")
+        print(f"列名顺序: {', '.join(data.columns)}")
+
+    except Exception as e:
+        print(f"下载或处理 {symbol} 的Tick数据时发生错误: {str(e)}")
+        raise
+
+if __name__ == "__main__":
+    # 下载5分钟K线数据
+    download_bar_data(
+        symbol='SHFE.rb2510',
+        start_time='2024-10-01 09:00:00',
+        end_time='2025-02-22 15:00:00',
+        frequency='1d'
+    )
+
+    # 下载tick数据
+    # download_tick_data(
+    #     symbol='SHFE.rb2505',
+    #     start_time='2025-02-11 09:00:00',
+    #     end_time='2025-02-11 10:00:00'
+    # )
+
+9：/src/deeplearning/evaluator.py文件的内容是：
+# src/deeplearning/evaluator.py
+from abc import ABC, abstractmethod
+from typing import List, Dict
+import pandas as pd
+import numpy as np
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, GRU, Conv1D, Dense, Flatten
+import os
+from ..features.extractor import FeatureExtractor
+
+class DLModel(ABC):
+    """深度学习模型基类"""
+    @abstractmethod
+    def build_model(self, window: int, features: int) -> Sequential:
+        """构建模型"""
+        pass
+
+    @abstractmethod
+    def predict(self, model: Sequential, X: np.ndarray) -> float:
+        """进行预测，返回强弱概率"""
+        pass
+
+class LSTMModel(DLModel):
+    def build_model(self, window: int, features: int) -> Sequential:
+        model = Sequential([
+            LSTM(20, input_shape=(window, features), return_sequences=True),
+            LSTM(10),
+            Dense(1, activation='sigmoid')
+        ])
+        model.compile(optimizer='adam', loss='binary_crossentropy')
+        return model
+
+    def predict(self, model: Sequential, X: np.ndarray) -> float:
+        return model.predict(X, verbose=0)[0][0]
+
+class GRUModel(DLModel):
+    def build_model(self, window: int, features: int) -> Sequential:
+        model = Sequential([
+            GRU(20, input_shape=(window, features), return_sequences=True),
+            GRU(10),
+            Dense(1, activation='sigmoid')
+        ])
+        model.compile(optimizer='adam', loss='binary_crossentropy')
+        return model
+
+    def predict(self, model: Sequential, X: np.ndarray) -> float:
+        return model.predict(X, verbose=0)[0][0]
+
+class CNNModel(DLModel):
+    def build_model(self, window: int, features: int) -> Sequential:
+        model = Sequential([
+            Conv1D(32, kernel_size=3, activation='relu', input_shape=(window, features)),
+            Conv1D(16, kernel_size=3, activation='relu'),
+            Flatten(),
+            Dense(10, activation='relu'),
+            Dense(1, activation='sigmoid')
+        ])
+        model.compile(optimizer='adam', loss='binary_crossentropy')
+        return model
+
+    def predict(self, model: Sequential, X: np.ndarray) -> float:
+        return model.predict(X, verbose=0)[0][0]
+
+class DLEvaluator:
+    """深度学习评估器"""
+    def __init__(self, model: DLModel, feature_extractor: FeatureExtractor, window: int = 50, 
+                 model_path: str = None, epochs: int = 5):
+        self.model = model
+        self.feature_extractor = feature_extractor
+        self.window = window
+        self.model_path = model_path or f"../models/dl_model_{id(self)}"
+        self.epochs = epochs
+        self.trained_models = {}
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> Dict[str, float]:
+        """评估每个合约的强弱"""
+        scores = {}
+        features_df = self.feature_extractor.extract_features(datasets, include_labels=False)
+        feature_cols = [col for col in features_df.columns if not col.startswith('label')]
+
+        for i, data in enumerate(datasets):
+            # 提取该合约的特征列
+            contract_features = [col for col in feature_cols if col.endswith(str(i+1))]
+            series = features_df[contract_features].tail(self.window + 1)
+            X = series[:-1].values.reshape(1, self.window, len(contract_features))
+            y = np.array([1 if data['close'].iloc[-1] > data['close'].iloc[-2] else 0])  # 简单标签
+
+            # 检查是否已有预训练模型
+            contract_key = f"contract{i+1}"
+            model_file = f"{self.model_path}_{contract_key}.h5"
+            if os.path.exists(model_file):
+                dl_model = tf.keras.models.load_model(model_file)
+            else:
+                dl_model = self.model.build_model(self.window, len(contract_features))
+                dl_model.fit(X, y, epochs=self.epochs, verbose=0)
+                dl_model.save(model_file)
+                print(f"模型已保存至: {model_file}")
+
+            # 预测
+            score = self.model.predict(dl_model, X)
+            scores[contract_key] = score
+            self.trained_models[contract_key] = dl_model
+
+        return scores
+
+    def save_model(self, contract: str):
+        """保存特定合约的模型"""
+        if contract in self.trained_models:
+            self.trained_models[contract].save(f"{self.model_path}_{contract}.h5")
+            print(f"模型已保存至: {self.model_path}_{contract}.h5")
+
+    def load_model(self, contract: str) -> Sequential:
+        """加载特定合约的模型"""
+        model_file = f"{self.model_path}_{contract}.h5"
+        if os.path.exists(model_file):
+            return tf.keras.models.load_model(model_file)
+        raise FileNotFoundError(f"模型文件未找到: {model_file}")
+		
+
+10：/src/features/extractor.py文件内容是这样的
+# src/features/extractor.py
+import pandas as pd
+import numpy as np
+from typing import List, Optional
+from .features import Feature
+
+class FeatureExtractor:
+    def __init__(self, features: List[Feature]):
+        self.features = features
+
+    def extract_features(self, datasets: List[pd.DataFrame], labeler: Optional['Labeler'] = None) -> pd.DataFrame:
+        # 对齐所有合约的时间索引
+        common_index = datasets[0].index
+        for data in datasets[1:]:
+            common_index = common_index.intersection(data.index)
+        aligned_datasets = [data.loc[common_index].reset_index() for data in datasets]
+        
+        # 提取特征
+        feature_dict = {}
+        for feature in self.features:
+            feature_dict.update(feature.compute(aligned_datasets))
+        
+        features_df = pd.DataFrame(feature_dict, index=common_index)
+        
+        # 如果提供了标签生成器，则生成标签
+        if labeler:
+            labels = labeler.generate_labels(aligned_datasets)
+            features_df.update(labels)
+        
+        return features_df.dropna()
+11：/src/features/featrues/description.md文件内容是：
+# 新增 35 个机器学习特征的含义与作用
+
+以下是基于期货市场数据（`SHFE.rb2510` 和 `SHFE.rb2505`）设计的 35 个新特征，用于机器学习（`ml`）和深度学习（`deeplearning`）方法，旨在反映合约的强弱规律。这些特征已实现于 `src/features/features.py`，从自然界、工业界、数学界、物理界等多维度出发，避免与现有特征（`PriceFeature`, `VolumeFeature`, `SpreadFeature`, `PositionFeature`, `AmountFeature`）高度重复。每个特征的含义和作用如下：
+
+---
+
+## 1. PriceAccelerationFeature
+
+- **含义**: 价格变化的二阶导数，反映趋势的加速或减速情况。
+- **作用**: 加速上涨表明强势，可能预示趋势延续；减速可能暗示反转。
+- **创新点**: 引入物理加速度概念，捕捉趋势动态变化。
+- **维度**: 物理界
+
+---
+
+## 2. IntradayVolatilityRatioFeature
+
+- **含义**: 开盘-收盘价差与高低价差的比率，衡量日内波动效率。
+- **作用**: 比率低表明波动平稳，合约可能更稳定；比率高表明波动剧烈。
+- **创新点**: 从工业效率角度分析日内波动特性。
+- **维度**: 工业界
+
+---
+
+## 3. PriceSkewnessFeature
+
+- **含义**: 收盘价分布的偏度，反映价格波动的非对称性。
+- **作用**: 正偏度表明上涨潜力更大，合约可能更强；负偏度可能暗示弱势。
+- **创新点**: 统计学偏度分析，挖掘价格分布规律。
+- **维度**: 数学界
+
+---
+
+## 4. PriceKurtosisFeature
+
+- **含义**: 收盘价分布的峰度，反映价格集中程度。
+- **作用**: 低峰度表明波动均匀，合约可能更稳定；高峰度可能预示极端波动。
+- **创新点**: 统计峰度分析，提供分布形状信息。
+- **维度**: 数学界
+
+---
+
+## 5. PriceEntropyFeature
+
+- **含义**: 价格分布的信息熵，衡量价格的不确定性和随机性。
+- **作用**: 熵低表明价格聚集，合约可能更稳定；熵高可能暗示波动无序。
+- **创新点**: 信息论视角，量化价格分布的混乱度。
+- **维度**: 自然界
+
+---
+
+## 6. VolumePressureFeature
+
+- **含义**: 成交量与价格波动的比率，反映交易压力。
+- **作用**: 压力低表明市场平稳，合约可能更强；压力高可能预示波动风险。
+- **创新点**: 工业效率指标，结合成交量与波动。
+- **维度**: 工业界
+
+---
+
+## 7. PositionVolatilityFeature
+
+- **含义**: 持仓量变化的标准差，衡量持仓的波动性。
+- **作用**: 波动低表明持仓稳定，合约可能更有支撑；波动高可能暗示市场分歧。
+- **创新点**: 从持仓动态角度分析稳定性。
+- **维度**: 数学界
+
+---
+
+## 8. PriceMomentumFeature
+
+- **含义**: 价格变化的累计和，反映价格的动量。
+- **作用**: 动量高表明趋势强劲，合约可能更强；动量低可能预示反转。
+- **创新点**: 物理动量概念，量化趋势强度。
+- **维度**: 物理界
+
+---
+
+## 9. IntradayPriceRangeFeature
+
+- **含义**: 高低价差超出开收盘价差的部分，衡量日内价格范围的扩展。
+- **作用**: 扩展小表明波动受控，合约可能更稳定；扩展大可能预示活跃。
+- **创新点**: 从工业界角度分析日内波动扩展。
+- **维度**: 工业界
+
+---
+
+## 10. PriceCycleAmplitudeFeature
+
+- **含义**: 基于傅里叶变换的低频分量强度，反映价格波动的周期幅度。
+- **作用**: 周期强表明趋势规律，合约可能更强；周期弱可能暗示无序。
+- **创新点**: 自然界周期性分析，挖掘价格波动规律。
+- **维度**: 自然界
+
+---
+
+## 11. PriceShadowAsymmetryFeature
+
+- **含义**: 上下影线的长度差异，衡量价格延伸的不对称性。
+- **作用**: 差异小表明市场平衡，合约可能更稳定；差异大可能预示方向性。
+- **创新点**: 几何不对称性分析，捕捉日内结构。
+- **维度**: 数学界
+
+---
+
+## 12. TurnoverEfficiencyFeature
+
+- **含义**: 成交量与持仓量比率的波动性，衡量换手效率的稳定性。
+- **作用**: 波动低表明交易平稳，合约可能更强；波动高可能暗示活跃。
+- **创新点**: 工业效率波动分析，间接反映市场情绪。
+- **维度**: 工业界
+
+---
+
+## 13. PriceVelocityFeature
+
+- **含义**: 单位时间价格变化率，反映价格移动速度。
+- **作用**: 速度高表明动能强劲，合约可能更强；速度低可能预示停滞。
+- **创新点**: 物理速度指标，量化趋势动态。
+- **维度**: 物理界
+
+---
+
+## 14. IntradayPivotStrengthFeature
+
+- **含义**: 价格偏离高低点中点的程度，衡量日内枢轴的强度。
+- **作用**: 偏离小表明稳定性强，合约可能更有支撑；偏离大可能预示波动。
+- **创新点**: 数学角度分析日内枢轴特性。
+- **维度**: 数学界
+
+---
+
+## 15. PriceFractalDimensionFeature
+
+- **含义**: 价格路径的复杂性近似分形维度，反映价格波动的结构复杂性。
+- **作用**: 复杂性低表明趋势简单，合约可能更强；复杂性高可能预示震荡。
+- **创新点**: 分形几何分析，量化路径特性。
+- **维度**: 数学界
+
+---
+
+## 16. AmountVelocityFeature
+
+- **含义**: 成交金额变化率，反映资金流的移动速度。
+- **作用**: 速度高表明资金活跃，合约可能更强；速度低可能暗示疲软。
+- **创新点**: 物理视角分析资金流动态。
+- **维度**: 物理界
+
+---
+
+## 17. PriceElasticityFeature
+
+- **含义**: 价格变化与成交量的相对弹性，衡量价格对成交量的敏感性。
+- **作用**: 弹性高表明价格活跃，合约可能更强；弹性低可能预示僵化。
+- **创新点**: 物理弹性概念，结合量价关系。
+- **维度**: 物理界
+
+---
+
+## 18. VolatilityCycleFeature
+
+- **含义**: 高低价差的周期强度，反映波动规律。
+- **作用**: 周期性强表明波动可预测，合约可能更强；周期弱可能暗示无序。
+- **创新点**: 自然界周期分析，聚焦波动特性。
+- **维度**: 自然界
+
+---
+
+## 19. PriceMeanDistanceFeature
+
+- **含义**: 价格与均线的平均偏离，衡量趋势偏移程度。
+- **作用**: 偏离小表明趋势稳定，合约可能更强；偏离大可能预示波动。
+- **创新点**: 统计距离指标，分析趋势稳定性。
+- **维度**: 数学界
+
+---
+
+## 20. IntradayPriceSymmetryFeature
+
+- **含义**: 开收盘与高低点的对称性，衡量日内价格分布的平衡。
+- **作用**: 对称性高表明市场平衡，合约可能更稳定；对称性低可能预示方向性。
+- **创新点**: 数学对称性分析，捕捉日内特性。
+- **维度**: 数学界
+
+---
+
+## 21. VolumeMomentumFeature
+
+- **含义**: 成交量变化的累计和，反映交易动量。
+- **作用**: 动量高表明交易活跃，合约可能更强；动量低可能暗示疲软。
+- **创新点**: 物理动量分析，聚焦成交量。
+- **维度**: 物理界
+
+---
+
+## 22. PriceWaveletEnergyFeature
+
+- **含义**: 价格波动的小波变换能量，反映波动强度。
+- **作用**: 能量高表明波动剧烈，合约可能更活跃；能量低可能预示平稳。
+- **创新点**: 自然界小波分析，量化波动能量。
+- **维度**: 自然界
+
+---
+
+## 23. PositionAccelerationFeature
+
+- **含义**: 持仓量变化的二阶导数，反映持仓加速情况。
+- **作用**: 加速高表明持仓活跃，合约可能更强；减速可能暗示减弱。
+- **创新点**: 物理加速度视角，分析持仓动态。
+- **维度**: 物理界
+
+---
+
+## 24. PriceDensityFeature
+
+- **含义**: 价格分布的集中度，反映价格聚集性。
+- **作用**: 密度高表明价格稳定，合约可能更强；密度低可能预示分散。
+- **创新点**: 数学分布密度分析。
+- **维度**: 数学界
+
+---
+
+## 25. IntradayPriceVelocityFeature
+
+- **含义**: 开收盘变化的速度，反映日内动能。
+- **作用**: 速度高表明日内趋势强劲，合约可能更强；速度低可能预示平稳。
+- **创新点**: 物理速度分析，聚焦日内动态。
+- **维度**: 物理界
+
+---
+
+## 26. PriceRotationFrequencyFeature
+
+- **含义**: 价格围绕均值的旋转频率，反映价格波动规律。
+- **作用**: 旋转少表明趋势稳定，合约可能更强；旋转多可能预示震荡。
+- **创新点**: 自然界旋转行为分析。
+- **维度**: 自然界
+
+---
+
+## 27. VolumePriceCorrelationFeature
+
+- **含义**: 成交量与价格的相关系数，反映量价配合。
+- **作用**: 正相关表明趋势健康，合约可能更强；负相关可能预示背离。
+- **创新点**: 数学相关性分析，结合量价关系。
+- **维度**: 数学界
+
+---
+
+## 28. PriceBreakoutStrengthFeature
+
+- **含义**: 价格突破均线的幅度，反映突破强度。
+- **作用**: 突破强表明趋势明显，合约可能更强；突破弱可能预示假突破。
+- **创新点**: 工业效率视角，量化突破。
+- **维度**: 工业界
+
+---
+
+## 29. IntradayPriceCenterFeature
+
+- **含义**: 收盘价与高低点中点的距离，衡量日内价格中心稳定性。
+- **作用**: 距离小表明日内均衡，合约可能更稳定；距离大可能预示方向性。
+- **创新点**: 数学中心分析，聚焦日内结构。
+- **维度**: 数学界
+
+---
+
+## 30. PriceHarmonicAmplitudeFeature
+
+- **含义**: 价格波动的第一谐波分量，反映主要周期强度。
+- **作用**: 谐波强表明趋势规律，合约可能更强；谐波弱可能暗示无序。
+- **创新点**: 自然界谐波分析，挖掘周期特性。
+- **维度**: 自然界
+
+---
+
+## 31. AmountPressureFeature
+
+- **含义**: 成交金额与价格波动的比率，反映资金流压力。
+- **作用**: 压力低表明资金平稳，合约可能更强；压力高可能预示波动。
+- **创新点**: 工业效率指标，分析资金流。
+- **维度**: 工业界
+
+---
+
+## 32. PositionMomentumFeature
+
+- **含义**: 持仓量变化的累计和，反映持仓动量。
+- **作用**: 动量高表明持仓活跃，合约可能更强；动量低可能暗示疲软。
+- **创新点**: 物理动量分析，聚焦持仓。
+- **维度**: 物理界
+
+---
+
+## 33. PriceSpikeFrequencyFeature
+
+- **含义**: 价格波动超出均值 2 倍的频率，反映异常波动规律。
+- **作用**: 尖峰少表明平稳，合约可能更强；尖峰多可能预示风险。
+- **创新点**: 自然界异常行为分析。
+- **维度**: 自然界
+
+---
+
+## 34. IntradayPriceElasticityFeature
+
+- **含义**: 开收盘变化与成交量的相对弹性，衡量日内敏感性。
+- **作用**: 弹性高表明日内活跃，合约可能更强；弹性低可能预示僵化。
+- **创新点**: 物理弹性分析，聚焦日内。
+- **维度**: 物理界
+
+---
+
+## 35. PriceTrendPersistenceFeature
+
+- **含义**: 价格方向的一致性比例，反映趋势持久性。
+- **作用**: 一致性高表明趋势持久，合约可能更强；一致性低可能预示反转。
+- **创新点**: 自然界持久性分析，量化趋势稳定性。
+- **维度**: 自然界
+
+---
+
+## 特征设计说明
+
+- **多维度来源**:
+  - **自然界**: 周期（`PriceCycleAmplitudeFeature`）、熵（`PriceEntropyFeature`）、谐波（`PriceHarmonicAmplitudeFeature`）等，模拟自然规律。
+  - **工业界**: 效率（`VolumePressureFeature`）、稳定性（`TurnoverEfficiencyFeature`）、突破（`PriceBreakoutStrengthFeature`）等，借鉴工业指标。
+  - **数学界**: 偏度（`PriceSkewnessFeature`）、分形（`PriceFractalDimensionFeature`）、相关性（`VolumePriceCorrelationFeature`）等，提供统计视角。
+  - **物理界**: 加速度（`PriceAccelerationFeature`）、动量（`PriceMomentumFeature`）、弹性（`PriceElasticityFeature`）等，引入物理概念。
+- **低重复性**:
+  - 与现有特征（价格、成交量均线等）差异化，通过动态、统计、周期等多角度设计。
+  - 内部特征避免重叠，如 `PriceMomentumFeature`（累计动量）与 `PriceVelocityFeature`（速度）从不同维度分析趋势。
+- **数据支持**: 基于 `open`, `high`, `low`, `close`, `volume`, `amount`, `position`，默认窗口期为 10 或 20 天。
+
+---
+
+## 使用说明
+
+这些特征已实现于 `src/features/features.py`，适用于 `ml` 和 `deeplearning` 模块。基于 `SHFE.rb2510` 和 `SHFE.rb2505` 数据（重叠期 2024-10-16 至 2025-02-20，79 天），可直接提取特征值并用于后续模型训练。
+12：/src/features/features.py文件内容是这样的：
+# src/features/features.py
+import numpy as np
+import pandas as pd
+from abc import ABC, abstractmethod
+from scipy.stats import skew, kurtosis
+
+class Feature(ABC):
+    def __init__(self, name: str):
+        self.name = name
+
+    @abstractmethod
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        pass
+
+# 现有特征（保留）
+class PriceFeature(Feature):
+    def __init__(self, column):
+        super().__init__(f"{column}")
+        self.column = column
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data[self.column]
+
+class VolumeFeature(Feature):
+    def __init__(self, window: int = 20):
+        super().__init__(f"volume_sma_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data["volume"].rolling(self.window).mean()
+
+class SpreadFeature(Feature):
+    def __init__(self):
+        super().__init__("spread")
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data["high"] - data["low"]
+
+class PositionFeature(Feature):
+    def __init__(self):
+        super().__init__("position")
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data["position"]
+
+class AmountFeature(Feature):
+    def __init__(self):
+        super().__init__("amount")
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data["amount"]
+
+# 新增 35 个特征
+class PriceAccelerationFeature(Feature):
+    """价格加速度：价格变化的二阶导数"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_acceleration_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['close'].diff().diff().rolling(self.window).mean()
+
+class IntradayVolatilityRatioFeature(Feature):
+    """日内波动比率：开收盘价差与高低价差的比率"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_volatility_ratio_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return ((data['close'] - data['open']).abs() / (data['high'] - data['low'])).rolling(self.window).mean()
+
+class PriceSkewnessFeature(Feature):
+    """价格偏度：收盘价的统计偏态"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_skewness_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['close'].rolling(self.window).apply(skew, raw=False)
+
+class PriceKurtosisFeature(Feature):
+    """价格峰度：收盘价的统计峰态"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_kurtosis_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['close'].rolling(self.window).apply(kurtosis, raw=False)
+
+class PriceEntropyFeature(Feature):
+    """价格熵：价格分布的信息熵"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_entropy_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def entropy(series):
+            counts = np.histogram(series, bins=10, density=True)[0]
+            return -np.sum(counts * np.log(counts + 1e-10)) if counts.sum() > 0 else 0
+        return data['close'].rolling(self.window).apply(entropy, raw=False)
+
+class VolumePressureFeature(Feature):
+    """成交量压力：成交量与价格波动的比率"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"volume_pressure_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['volume'] / (data['high'] - data['low'])).rolling(self.window).mean()
+
+class PositionVolatilityFeature(Feature):
+    """持仓量波动性：持仓量的变化标准差"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"position_volatility_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['position'].diff().rolling(self.window).std()
+
+class PriceMomentumFeature(Feature):
+    """价格动量：价格变化的累计和"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_momentum_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['close'].diff().rolling(self.window).sum()
+
+class IntradayPriceRangeFeature(Feature):
+    """日内价格范围扩展：高低价差与开收盘价差的差值"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_price_range_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return ((data['high'] - data['low']) - (data['close'] - data['open']).abs()).rolling(self.window).mean()
+
+class PriceCycleAmplitudeFeature(Feature):
+    """价格周期幅度：基于傅里叶变换的低频分量强度"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_cycle_amplitude_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def fft_amplitude(series):
+            fft = np.abs(np.fft.fft(series - series.mean()))[1:self.window//2]
+            return fft.max()
+        return data['close'].rolling(self.window).apply(fft_amplitude, raw=True)
+
+class PriceShadowAsymmetryFeature(Feature):
+    """价格影线不对称性：上下影线的长度差异"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"price_shadow_asymmetry_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        upper = (data['high'] - data[['open', 'close']].max(axis=1))
+        lower = (data[['open', 'close']].min(axis=1) - data['low'])
+        return (upper - lower).rolling(self.window).mean()
+
+class TurnoverEfficiencyFeature(Feature):
+    """换手效率：成交量与持仓量的比率波动"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"turnover_efficiency_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['volume'] / data['position']).rolling(self.window).std()
+
+class PriceVelocityFeature(Feature):
+    """价格速度：单位时间价格变化率"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"price_velocity_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['close'].diff() / data['close'].shift()).rolling(self.window).mean()
+
+class IntradayPivotStrengthFeature(Feature):
+    """日内枢轴强度：价格围绕高低点中点的偏离"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_pivot_strength_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        pivot = (data['high'] + data['low']) / 2
+        return (data['close'] - pivot).abs().rolling(self.window).mean()
+
+class PriceFractalDimensionFeature(Feature):
+    """价格分形维度：价格路径的复杂性近似"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_fractal_dimension_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def fractal_dim(series):
+            diffs = series.diff().abs()
+            return len(diffs[diffs > diffs.mean()]) / self.window
+        return data['close'].rolling(self.window).apply(fractal_dim, raw=False)
+
+class AmountVelocityFeature(Feature):
+    """资金流速度：成交金额变化率"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"amount_velocity_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['amount'].diff() / data['amount'].shift()).rolling(self.window).mean()
+
+class PriceElasticityFeature(Feature):
+    """价格弹性：价格变化与成交量的相对弹性"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_elasticity_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['close'].pct_change() / data['volume'].pct_change()).rolling(self.window).mean()
+
+class VolatilityCycleFeature(Feature):
+    """波动周期性：高低价差的周期强度"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"volatility_cycle_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def fft_cycle(series):
+            fft = np.abs(np.fft.fft(series - series.mean()))[1:self.window//2]
+            return fft.max() / fft.mean()
+        return (data['high'] - data['low']).rolling(self.window).apply(fft_cycle, raw=True)
+
+class PriceMeanDistanceFeature(Feature):
+    """价格均值距离：价格与均线的平均偏离"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_mean_distance_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        ma = data['close'].rolling(self.window).mean()
+        return (data['close'] - ma).abs().rolling(self.window).mean()
+
+class IntradayPriceSymmetryFeature(Feature):
+    """日内价格对称性：开收盘与高低点的对称程度"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_price_symmetry_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return abs((data['close'] - data['open']) - (data['high'] - data['low'])).rolling(self.window).mean()
+
+class VolumeMomentumFeature(Feature):
+    """成交量动量：成交量变化的累计和"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"volume_momentum_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['volume'].diff().rolling(self.window).sum()
+
+class PriceWaveletEnergyFeature(Feature):
+    """价格小波能量：价格波动的小波变换能量"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_wavelet_energy_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def wavelet_energy(series):
+            coeffs = np.diff(series)  # 简单近似小波系数
+            return np.sum(coeffs**2)
+        return data['close'].rolling(self.window).apply(wavelet_energy, raw=True)
+
+class PositionAccelerationFeature(Feature):
+    """持仓量加速度：持仓量变化的二阶导数"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"position_acceleration_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['position'].diff().diff().rolling(self.window).mean()
+
+class PriceDensityFeature(Feature):
+    """价格密度：价格分布的集中度"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_density_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def density(series):
+            bins = np.histogram(series, bins=10)[0]
+            return bins.max() / self.window
+        return data['close'].rolling(self.window).apply(density, raw=False)
+
+class IntradayPriceVelocityFeature(Feature):
+    """日内价格速度：开收盘变化的速度"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_price_velocity_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return ((data['close'] - data['open']) / data['open']).rolling(self.window).mean()
+
+class PriceRotationFrequencyFeature(Feature):
+    """价格旋转频率：价格围绕均值的旋转次数"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_rotation_frequency_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        ma = data['close'].rolling(self.window).mean()
+        return ((data['close'] > ma) != (data['close'].shift() > ma.shift())).rolling(self.window).mean()
+
+class VolumePriceCorrelationFeature(Feature):
+    """成交量-价格相关性：成交量与价格的相关系数"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"volume_price_correlation_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['volume'].rolling(self.window).corr(data['close'])
+
+class PriceBreakoutStrengthFeature(Feature):
+    """突破强度：价格突破均线的幅度"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_breakout_strength_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        ma = data['close'].rolling(self.window).mean()
+        return (data['close'] - ma) / ma
+
+class IntradayPriceCenterFeature(Feature):
+    """日内价格中心：收盘价与高低点中点的距离"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_price_center_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        center = (data['high'] + data['low']) / 2
+        return (data['close'] - center).rolling(self.window).mean()
+
+class PriceHarmonicAmplitudeFeature(Feature):
+    """价格谐波幅度：价格波动的谐波分量强度"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_harmonic_amplitude_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        def harmonic(series):
+            fft = np.abs(np.fft.fft(series - series.mean()))[1:self.window//2]
+            return fft[0]  # 第一谐波分量
+        return data['close'].rolling(self.window).apply(harmonic, raw=True)
+
+class AmountPressureFeature(Feature):
+    """资金流压力：成交金额与价格波动的比率"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"amount_pressure_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return (data['amount'] / (data['high'] - data['low'])).rolling(self.window).mean()
+
+class PositionMomentumFeature(Feature):
+    """持仓量动量：持仓量变化的累计和"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"position_momentum_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return data['position'].diff().rolling(self.window).sum()
+
+class PriceSpikeFrequencyFeature(Feature):
+    """价格尖峰频率：超出均值2倍波动的次数"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_spike_frequency_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        range_mean = (data['high'] - data['low']).rolling(self.window).mean()
+        return ((data['high'] - data['low']) > 2 * range_mean).rolling(self.window).mean()
+
+class IntradayPriceElasticityFeature(Feature):
+    """日内价格弹性：开收盘变化与成交量的相对弹性"""
+    def __init__(self, window: int = 10):
+        super().__init__(f"intraday_price_elasticity_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        return ((data['close'] - data['open']).pct_change() / data['volume'].pct_change()).rolling(self.window).mean()
+
+class PriceTrendPersistenceFeature(Feature):
+    """趋势持久性：价格方向一致性比例"""
+    def __init__(self, window: int = 20):
+        super().__init__(f"price_trend_persistence_{window}")
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> pd.Series:
+        direction = np.sign(data['close'].diff())
+        return (direction == direction.shift()).rolling(self.window).mean()
+13：/src/features/labelers.py文件内容是这样的：
+# src/features/labelers.py
+from abc import ABC, abstractmethod
+from typing import List, Dict
+import pandas as pd
+import numpy as np
+
+class Labeler(ABC):
+    @abstractmethod
+    def generate_labels(self, datasets: List[pd.DataFrame]) -> Dict[str, pd.Series]:
+        """生成每个合约的强弱标签，返回字典"""
+        pass
+
+# 基于收益率的标签生成器（默认策略）
+class ReturnBasedLabeler(Labeler):
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def generate_labels(self, datasets: List[pd.DataFrame]) -> Dict[str, pd.Series]:
+        returns = [data['close'].pct_change(periods=self.window) for data in datasets]
+        returns_df = pd.concat(returns, axis=1, keys=[f'return{i+1}' for i in range(len(returns))])
+        strongest = returns_df.idxmax(axis=1)
+        weakest = returns_df.idxmin(axis=1)
+        labels = {}
+        for i in range(len(datasets)):
+            labels[f'label{i+1}'] = np.where(
+                strongest == f'return{i+1}', 'strong',
+                np.where(weakest == f'return{i+1}', 'weak', 'neutral')
+            )
+        return labels
+
+# 基于成交量的标签生成器
+class VolumeBasedLabeler(Labeler):
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def generate_labels(self, datasets: List[pd.DataFrame]) -> Dict[str, pd.Series]:
+        volumes = [data['volume'].rolling(window=self.window).mean() for data in datasets]
+        volumes_df = pd.concat(volumes, axis=1, keys=[f'vol{i+1}' for i in range(len(volumes))])
+        strongest = volumes_df.idxmax(axis=1)
+        weakest = volumes_df.idxmin(axis=1)
+        labels = {}
+        for i in range(len(datasets)):
+            labels[f'label{i+1}'] = np.where(
+                strongest == f'vol{i+1}', 'strong',
+                np.where(weakest == f'vol{i+1}', 'weak', 'neutral')
+            )
+        return labels
+
+# 基于波动率的标签生成器
+class VolatilityBasedLabeler(Labeler):
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def generate_labels(self, datasets: List[pd.DataFrame]) -> Dict[str, pd.Series]:
+        volatilities = [(data['high'] - data['low']).rolling(window=self.window).mean() for data in datasets]
+        vol_df = pd.concat(volatilities, axis=1, keys=[f'volatility{i+1}' for i in range(len(volatilities))])
+        strongest = vol_df.idxmax(axis=1)
+        weakest = vol_df.idxmin(axis=1)
+        labels = {}
+        for i in range(len(datasets)):
+            labels[f'label{i+1}'] = np.where(
+                strongest == f'volatility{i+1}', 'strong',
+                np.where(weakest == f'volatility{i+1}', 'weak', 'neutral')
+            )
+        return labels
+14：/src/ml/main_ml.py文件内容是这样的：
+# src/ml/main_ml.py
+import json
+import os
+import pandas as pd
+import logging
+import numpy as np
+from sklearn.metrics import roc_auc_score, accuracy_score, precision_score, recall_score, f1_score
+from ..logging_utils import setup_logging
+from ..data_processor import DataProcessor
+from ..features.extractor import FeatureExtractor
+from ..features.features import (
+    PriceFeature, VolumeFeature, SpreadFeature, PositionFeature, AmountFeature,
+    PriceAccelerationFeature, IntradayVolatilityRatioFeature, PriceSkewnessFeature,
+    PriceKurtosisFeature, PriceEntropyFeature, VolumePressureFeature,
+    PositionVolatilityFeature, PriceMomentumFeature, IntradayPriceRangeFeature,
+    PriceCycleAmplitudeFeature, PriceShadowAsymmetryFeature, TurnoverEfficiencyFeature,
+    PriceVelocityFeature, IntradayPivotStrengthFeature, PriceFractalDimensionFeature,
+    AmountVelocityFeature, PriceElasticityFeature, VolatilityCycleFeature,
+    PriceMeanDistanceFeature, IntradayPriceSymmetryFeature, VolumeMomentumFeature,
+    PriceWaveletEnergyFeature, PositionAccelerationFeature, PriceDensityFeature,
+    IntradayPriceVelocityFeature, PriceRotationFrequencyFeature, VolumePriceCorrelationFeature,
+    PriceBreakoutStrengthFeature, IntradayPriceCenterFeature, PriceHarmonicAmplitudeFeature,
+    AmountPressureFeature, PositionMomentumFeature, PriceSpikeFrequencyFeature,
+    IntradayPriceElasticityFeature, PriceTrendPersistenceFeature
+)
+from ..features.labelers import ReturnBasedLabeler
+from .predictor import MLPredictor
+from .models import (
+    RandomForestModel, XGBoostModel, GradientBoostingModel, LightGBMModel, CatBoostModel,
+    LogisticRegressionModel, SVMModel, AdaBoostModel, ExtraTreesModel, KNeighborsModel,
+    StackingModel
+)
+from ..recommender import MLTradeRecommender
+
+def get_feature_objects(feature_names: list, window: int = 20) -> list:
+    feature_map = {
+        "open": PriceFeature("open"), "high": PriceFeature("high"), "low": PriceFeature("low"),
+        "close": PriceFeature("close"), "volume": VolumeFeature(window), "spread": SpreadFeature(),
+        "position": PositionFeature(), "amount": AmountFeature(),
+        "price_acceleration_20": PriceAccelerationFeature(window),
+        "intraday_volatility_ratio_10": IntradayVolatilityRatioFeature(10),
+        "price_skewness_20": PriceSkewnessFeature(window),
+        "price_kurtosis_20": PriceKurtosisFeature(window),
+        "price_entropy_20": PriceEntropyFeature(window),
+        "volume_pressure_20": VolumePressureFeature(window),
+        "position_volatility_20": PositionVolatilityFeature(window),
+        "price_momentum_20": PriceMomentumFeature(window),
+        "intraday_price_range_10": IntradayPriceRangeFeature(10),
+        "price_cycle_amplitude_20": PriceCycleAmplitudeFeature(window),
+        "price_shadow_asymmetry_10": PriceShadowAsymmetryFeature(10),
+        "turnover_efficiency_20": TurnoverEfficiencyFeature(window),
+        "price_velocity_10": PriceVelocityFeature(10),
+        "intraday_pivot_strength_10": IntradayPivotStrengthFeature(10),
+        "price_fractal_dimension_20": PriceFractalDimensionFeature(window),
+        "amount_velocity_20": AmountVelocityFeature(window),
+        "price_elasticity_20": PriceElasticityFeature(window),
+        "volatility_cycle_20": VolatilityCycleFeature(window),
+        "price_mean_distance_20": PriceMeanDistanceFeature(window),
+        "intraday_price_symmetry_10": IntradayPriceSymmetryFeature(10),
+        "volume_momentum_20": VolumeMomentumFeature(window),
+        "price_wavelet_energy_20": PriceWaveletEnergyFeature(window),
+        "position_acceleration_20": PositionAccelerationFeature(window),
+        "price_density_20": PriceDensityFeature(window),
+        "intraday_price_velocity_10": IntradayPriceVelocityFeature(10),
+        "price_rotation_frequency_20": PriceRotationFrequencyFeature(window),
+        "volume_price_correlation_20": VolumePriceCorrelationFeature(window),
+        "price_breakout_strength_20": PriceBreakoutStrengthFeature(window),
+        "intraday_price_center_10": IntradayPriceCenterFeature(10),
+        "price_harmonic_amplitude_20": PriceHarmonicAmplitudeFeature(window),
+        "amount_pressure_20": AmountPressureFeature(window),
+        "position_momentum_20": PositionMomentumFeature(window),
+        "price_spike_frequency_20": PriceSpikeFrequencyFeature(window),
+        "intraday_price_elasticity_10": IntradayPriceElasticityFeature(10),
+        "price_trend_persistence_20": PriceTrendPersistenceFeature(window)
+    }
+    return [feature_map[name] for name in feature_names if name in feature_map]
+
+def generate_ml_results(raw_results: dict, auc: float, recommend_mode: str, 
+                       auc_threshold: float = 0.7, prob_weight: float = 0.8, auc_weight: float = 0.2) -> dict:
+    if recommend_mode == "probability":
+        max_contract = max(raw_results, key=raw_results.get)
+        results = {contract: 'strong' if contract == max_contract else 'weak' 
+                  for contract in raw_results}
+    elif recommend_mode == "auc_filtered":
+        max_contract = max(raw_results, key=raw_results.get)
+        results = {contract: 'strong' if contract == max_contract else 'weak' 
+                  for contract in raw_results}
+    elif recommend_mode == "combined_score":
+        scores = {contract: prob_weight * prob + auc_weight * auc 
+                  for contract, prob in raw_results.items()}
+        max_contract = max(scores, key=scores.get)
+        results = {contract: 'strong' if contract == max_contract else 'weak' 
+                  for contract in raw_results}
+    else:
+        raise ValueError(f"不支持的推荐模式: {recommend_mode}")
+    return results
+
+def main_ml(global_config_path="../config.json", ml_config_path="ml_config.json"):  # 修改为上级目录路径
+    setup_logging(log_file_path="../../results/ml_log.log", level=logging.INFO)
+    logging.info("开始运行 ML 方法")
+
+    with open(global_config_path, "r") as f:
+        global_config = json.load(f)
+    with open(ml_config_path, "r") as f:
+        ml_config = json.load(f)
+
+    if "data_groups" not in global_config:
+        raise ValueError("全局配置缺少 'data_groups'")
+    if "features" not in ml_config:
+        raise ValueError("ML 配置缺少 'features'")
+
+    os.makedirs("../../results", exist_ok=True)
+    os.makedirs("../../models", exist_ok=True)
+
+    for group_idx, data_files in enumerate(global_config["data_groups"]):
+        logging.info(f"处理第 {group_idx + 1} 组数据: {data_files}")
+        processors = [DataProcessor(f"../../data/{path}") for path in data_files]
+        datasets = [p.clean_data() for p in processors]
+        symbols = [path.split('.')[0] for path in data_files]
+        for i, data in enumerate(datasets):
+            data.set_index('date', inplace=True)
+        common_index = datasets[0].index.intersection(datasets[1].index)
+        datasets = [data.loc[common_index].reset_index() for data in datasets]
+        logging.info("数据加载完成，时间对齐至重叠期")
+
+        features = ml_config.get("features", ["close", "volume"])
+        selected_features = get_feature_objects(features, ml_config.get("window", 20))
+        extractor = FeatureExtractor(selected_features)
+        labeler = ReturnBasedLabeler(20)
+        features_df = extractor.extract_features(datasets, labeler)
+        feature_cols = [col for col in features_df.columns if not col.startswith('label')]
+        logging.info(f"提取特征完成，共 {len(feature_cols)} 个特征")
+
+        model_type = ml_config.get("model_type", "random_forest")
+        base_model_type = ml_config.get("base_model", None) if model_type == "stacking" else None
+        model_map = {
+            "random_forest": RandomForestModel,
+            "xgboost": XGBoostModel,
+            "gradient_boosting": GradientBoostingModel,
+            "lightgbm": LightGBMModel,
+            "catboost": CatBoostModel,
+            "logistic_regression": LogisticRegressionModel,
+            "svm": SVMModel,
+            "adaboost": AdaBoostModel,
+            "extra_trees": ExtraTreesModel,
+            "knn": KNeighborsModel,
+            "stacking": lambda: StackingModel(base_model_type)
+        }
+        if model_type not in model_map:
+            raise ValueError(f"不支持的模型类型: {model_type}")
+        
+        models = [model_map[model_type]() for _ in datasets]
+        logging.info(f"使用 {model_type.replace('_', ' ').title()} 模型" + 
+                     (f"（Base Model: {base_model_type}）" if base_model_type else ""))
+
+        predictor = MLPredictor(models, feature_cols)
+        predictor.train(features_df)
+        logging.info("模型训练完成")
+        
+        y_true = features_df[f"label_{symbols[0]}"].map({'strong': 1, 'weak': 0, 'neutral': 0}).values
+        raw_results = predictor.predict(features_df)
+        y_pred_proba = np.array([raw_results[f"contract_{i+1}"] for i in range(len(datasets))]).T[0]
+        y_pred = (y_pred_proba > 0.5).astype(int)
+
+        auc = roc_auc_score(y_true, y_pred_proba)
+        accuracy = accuracy_score(y_true, y_pred)
+        precision = precision_score(y_true, y_pred, zero_division=0)
+        recall = recall_score(y_true, y_pred, zero_division=0)
+        f1 = f1_score(y_true, y_pred, zero_division=0)
+
+        logging.info("预测完成")
+
+        print(f"\n=== {model_type.replace('_', ' ').title()} 模型预测结果 ===" + 
+              (f"（Base Model: {base_model_type}）" if base_model_type else ""))
+        print("合约\t\t概率")
+        print("-" * 30)
+        for contract, value in raw_results.items():
+            symbol = symbols[int(contract[-1]) - 1]
+            print(f"{symbol:<15} {value:.4f}")
+        print("-" * 30)
+        print("评估指标:")
+        print(f"AUC-ROC: {auc:.4f}")
+        print(f"Accuracy: {accuracy:.4f}")
+        print(f"Precision: {precision:.4f}")
+        print(f"Recall: {recall:.4f}")
+        print(f"F1 Score: {f1:.4f}")
+        print("-" * 30)
+
+        recommend_mode = ml_config.get("recommend_mode", "probability")
+        results = generate_ml_results(
+            raw_results=raw_results,
+            auc=auc,
+            recommend_mode=recommend_mode,
+            auc_threshold=ml_config.get("auc_threshold", 0.7),
+            prob_weight=ml_config.get("prob_weight", 0.8),
+            auc_weight=ml_config.get("auc_weight", 0.2)
+        )
+        
+        recommender = MLTradeRecommender(global_config["market_direction"])
+        advice = recommender.recommend(results, "ml", symbols, group_idx, datasets)
+        
+        if recommend_mode == "auc_filtered" and auc < ml_config.get("auc_threshold", 0.7):
+            advice += f"\n警告: AUC ({auc:.4f}) 低于 {ml_config.get('auc_threshold', 0.7)}，模型区分能力可能不足，建议谨慎"
+        elif recommend_mode == "combined_score":
+            scores = {contract: ml_config.get("prob_weight", 0.8) * prob + ml_config.get("auc_weight", 0.2) * auc 
+                      for contract, prob in raw_results.items()}
+            advice += "\n综合得分计算:"
+            for contract, score in scores.items():
+                symbol = symbols[int(contract[-1]) - 1]
+                prob = raw_results[contract]
+                advice += f"\n{symbol}: {score:.4f} = {ml_config.get('prob_weight', 0.8)} * {prob:.4f} + {ml_config.get('auc_weight', 0.2)} * {auc:.4f}"
+
+        print(f"交易建议模式: {recommend_mode.replace('_', ' ').title()}")
+        print(f"交易建议: {advice}")
+        logging.info(f"交易建议生成（模式: {recommend_mode}）: {advice}")
+        logging.info(f"评估指标 - AUC: {auc:.4f}, Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, "
+                     f"Recall: {recall:.4f}, F1: {f1:.4f}")
+
+    logging.info("ML 方法运行完成")
+
+if __name__ == "__main__":
+    main_ml()
+15：src/ml/ml_config.json文件是这样的：
+{
+    "features": [
+        "close", "volume", "spread", "position", "amount",
+        "price_acceleration_20", "intraday_volatility_ratio_10", "price_skewness_20",
+        "price_kurtosis_20", "price_entropy_20", "volume_pressure_20",
+        "position_volatility_20", "price_momentum_20", "intraday_price_range_10",
+        "price_cycle_amplitude_20", "price_shadow_asymmetry_10", "turnover_efficiency_20",
+        "price_velocity_10", "intraday_pivot_strength_10", "price_fractal_dimension_20",
+        "amount_velocity_20", "price_elasticity_20", "volatility_cycle_20",
+        "price_mean_distance_20", "intraday_price_symmetry_10", "volume_momentum_20",
+        "price_wavelet_energy_20", "position_acceleration_20", "price_density_20",
+        "intraday_price_velocity_10", "price_rotation_frequency_20", "volume_price_correlation_20",
+        "price_breakout_strength_20", "intraday_price_center_10", "price_harmonic_amplitude_20",
+        "amount_pressure_20", "position_momentum_20", "price_spike_frequency_20",
+        "intraday_price_elasticity_10", "price_trend_persistence_20"
+    ],
+    "window": 20,
+    "model_type": "stacking",
+    "base_model": "lightgbm",
+    "recommend_mode": "combined_score",
+    "prob_weight": 0.8,
+    "auc_weight": 0.2
+}
+16：/src/ml/models.py文件内容是这样的:
+# src/ml/models.py
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, ExtraTreesClassifier, AdaBoostClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+import xgboost as xgb
+import lightgbm as lgb
+import catboost as cat
+
+class MLModel:
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        pass
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        pass
+
+class RandomForestModel(MLModel):
+    def __init__(self):
+        self.model = RandomForestClassifier(n_estimators=100, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class XGBoostModel(MLModel):
+    def __init__(self):
+        self.model = xgb.XGBClassifier(n_estimators=100, random_state=42, use_label_encoder=False, eval_metric='logloss')
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class GradientBoostingModel(MLModel):
+    def __init__(self):
+        self.model = GradientBoostingClassifier(n_estimators=100, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class LightGBMModel(MLModel):
+    def __init__(self):
+        self.model = lgb.LGBMClassifier(n_estimators=100, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class CatBoostModel(MLModel):
+    def __init__(self):
+        self.model = cat.CatBoostClassifier(n_estimators=100, random_state=42, verbose=0)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class LogisticRegressionModel(MLModel):
+    def __init__(self):
+        self.model = LogisticRegression(max_iter=1000, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class SVMModel(MLModel):
+    def __init__(self):
+        self.model = SVC(probability=True, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class AdaBoostModel(MLModel):
+    def __init__(self):
+        self.model = AdaBoostClassifier(n_estimators=100, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class ExtraTreesModel(MLModel):
+    def __init__(self):
+        self.model = ExtraTreesClassifier(n_estimators=100, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+class KNeighborsModel(MLModel):
+    def __init__(self):
+        self.model = KNeighborsClassifier(n_neighbors=5)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        self.model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        return self.model.predict_proba(X)[:, 1]
+
+    
+class StackingModel(MLModel):
+    def __init__(self, base_model_type: str = None):
+        self.all_models = {
+            "random_forest": RandomForestModel(),
+            "xgboost": XGBoostModel(),
+            "gradient_boosting": GradientBoostingModel(),
+            "lightgbm": LightGBMModel(),
+            "catboost": CatBoostModel(),
+            "svm": SVMModel(),
+            "adaboost": AdaBoostModel(),
+            "extra_trees": ExtraTreesModel(),
+            "knn": KNeighborsModel()
+        }
+        self.base_model_type = base_model_type
+        if base_model_type and base_model_type in self.all_models:
+            self.base_model = self.all_models[base_model_type]
+            self.other_models = [model for key, model in self.all_models.items() if key != base_model_type]
+        else:
+            self.base_model = None
+            self.other_models = list(self.all_models.values())
+        self.meta_model = LogisticRegression(max_iter=1000, random_state=42)
+
+    def fit(self, X: pd.DataFrame, y: pd.Series):
+        # 训练基模型并生成元特征
+        if self.base_model:
+            base_pred = self.base_model.predict(X)
+            other_preds = np.column_stack([model.predict(X) for model in self.other_models])
+            meta_features = np.column_stack([base_pred, other_preds])
+            self.base_model.fit(X, y)
+        else:
+            meta_features = np.column_stack([model.predict(X) for model in self.other_models])
+        self.meta_model.fit(meta_features, y)
+        for model in self.other_models:
+            model.fit(X, y)
+
+    def predict(self, X: pd.DataFrame) -> np.ndarray:
+        if self.base_model:
+            base_pred = self.base_model.predict(X)
+            other_preds = np.column_stack([model.predict(X) for model in self.other_models])
+            meta_features = np.column_stack([base_pred, other_preds])
+        else:
+            meta_features = np.column_stack([model.predict(X) for model in self.other_models])
+        return self.meta_model.predict_proba(meta_features)[:, 1]
+17：src/ml/predictor.py文件内容是这样的：
+from typing import List, Dict
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from .models import MLModel
+import pandas as pd
+
+class MLPredictor:
+    def __init__(self, models: List[MLModel], feature_cols: List[str]):
+        self.models = models
+        self.feature_cols = feature_cols
+
+    def train(self, features: pd.DataFrame):
+        X = features[self.feature_cols]
+        for i, model in enumerate(self.models):
+            y = features[f'label{i+1}']
+            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+            model.train(X_train, y_train)
+            print(f"Contract{i+1} 准确率: {accuracy_score(y_test, model.predict(X_test)):.2f}")
+
+    def predict(self, features: pd.DataFrame) -> Dict[str, str]:
+        X = features[self.feature_cols].iloc[-1:]
+        return {f"contract{i+1}": model.predict(X)[0] for i, model in enumerate(self.models)}
+18：/src/pca/evaluator.py文件的内容是：
+# src/pca/evaluator.py
+from typing import List, Dict
+import pandas as pd
+from sklearn.decomposition import PCA
+
+def evaluate(datasets: List[pd.DataFrame], window: int = 20) -> Dict[str, float]:
+    """PCA方法：基于多维特征的主成分贡献判断强弱"""
+    features = pd.concat([data.tail(window)[['close', 'volume', 'position']] for data in datasets], 
+                        axis=1, keys=[f'contract{i+1}' for i in range(len(datasets))])
+    pca = PCA(n_components=1)
+    pca.fit(features.dropna())
+    scores = pca.transform(features.dropna())[:, 0]  # 第一主成分得分
+    return {f"contract{i+1}": scores[-1] for i in range(len(datasets))}  # 取最新得分
+19：/src/scoring/analyses.py
+# src/scoring/analyses.py
+from abc import ABC, abstractmethod
+from typing import Tuple
+import pandas as pd
+import numpy as np
+from scipy.stats import skew, kurtosis
+
+class AnalysisModule(ABC):
+    @abstractmethod
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        pass
+
+# 20 个创新 Analysis 类
+class PriceTrendAccelerationAnalysis(AnalysisModule):
+    """价格趋势加速度：最近20天价格变化率的趋势变化"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        chg1 = data1['close'].pct_change().tail(20)
+        chg2 = data2['close'].pct_change().tail(20)
+        accel1 = chg1.diff().mean() * 1000  # 二阶导数放大
+        accel2 = chg2.diff().mean() * 1000
+        return min(max(accel1 + 5, 0), 10), min(max(accel2 + 5, 0), 10)
+
+class IntradayVolatilityAnalysis(AnalysisModule):
+    """日内波动性：开盘-收盘与高低价差的相对强度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        intra1 = (data1['close'] - data1['open']).abs().mean() / (data1['high'] - data1['low']).mean()
+        intra2 = (data2['close'] - data2['open']).abs().mean() / (data2['high'] - data2['low']).mean()
+        max_intra = max(intra1, intra2, 1e-6)
+        return 10 - min(intra1 / max_intra * 10, 10), 10 - min(intra2 / max_intra * 10, 10)
+
+class PriceSkewnessAnalysis(AnalysisModule):
+    """价格偏度：20天收盘价分布的偏态"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        skew1 = skew(data1['close'].tail(20))
+        skew2 = skew(data2['close'].tail(20))
+        return min(max(skew1 + 5, 0), 10), min(max(skew2 + 5, 0), 10)
+
+class PriceKurtosisAnalysis(AnalysisModule):
+    """价格峰度：20天收盘价分布的尖峰程度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        kurt1 = kurtosis(data1['close'].tail(20))
+        kurt2 = kurtosis(data2['close'].tail(20))
+        max_kurt = max(kurt1, kurt2, 1e-6)
+        return 10 - min(kurt1 / max_kurt * 10, 10), 10 - min(kurt2 / max_kurt * 10, 10)
+
+class PriceCompressionAnalysis(AnalysisModule):
+    """价格压缩：20天内价格波动的收敛性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        range1 = (data1['high'] - data1['low']).tail(20).std()
+        range2 = (data2['high'] - data2['low']).tail(20).std()
+        max_range = max(range1, range2, 1e-6)
+        return 10 - min(range1 / max_range * 10, 10), 10 - min(range2 / max_range * 10, 10)
+
+class IntradayReversalAnalysis(AnalysisModule):
+    """日内反转强度：开盘-收盘方向与高低点位置的反转幅度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        rev1 = ((data1['close'] - data1['open']) / (data1['high'] - data1['low'])).abs().tail(10).mean() * 10
+        rev2 = ((data2['close'] - data2['open']) / (data2['high'] - data2['low'])).abs().tail(10).mean() * 10
+        return min(max(rev1, 0), 10), min(max(rev2, 0), 10)
+
+class PriceMeanReversionAnalysis(AnalysisModule):
+    """均值回归倾向：价格与20天均线的回归速度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        ma1 = data1['close'].rolling(window=20).mean()
+        ma2 = data2['close'].rolling(window=20).mean()
+        revert1 = abs(data1['close'].iloc[-1] - ma1.iloc[-1]) / abs(data1['close'].iloc[-2] - ma1.iloc[-2]) if abs(data1['close'].iloc[-2] - ma1.iloc[-2]) != 0 else 1
+        revert2 = abs(data2['close'].iloc[-1] - ma2.iloc[-1]) / abs(data2['close'].iloc[-2] - ma2.iloc[-2]) if abs(data2['close'].iloc[-2] - ma2.iloc[-2]) != 0 else 1
+        return min(10 / revert1, 10), min(10 / revert2, 10)
+
+class TrendDirectionConsistencyAnalysis(AnalysisModule):
+    """趋势方向一致性：20天内价格方向的连续性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        dir1 = np.sign(data1['close'].diff()).tail(20)
+        dir2 = np.sign(data2['close'].diff()).tail(20)
+        cons1 = (dir1 == dir1.shift()).mean() * 10
+        cons2 = (dir2 == dir2.shift()).mean() * 10
+        return min(max(cons1, 0), 10), min(max(cons2, 0), 10)
+
+class PriceBounceStrengthAnalysis(AnalysisModule):
+    """价格反弹强度：从20天最低点的反弹幅度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        low1 = data1['low'].tail(20).min()
+        low2 = data2['low'].tail(20).min()
+        bounce1 = (data1['close'].iloc[-1] - low1) / low1 * 100
+        bounce2 = (data2['close'].iloc[-1] - low2) / low2 * 100
+        return min(max(bounce1, 0), 10), min(max(bounce2, 0), 10)
+
+class PricePullbackStrengthAnalysis(AnalysisModule):
+    """价格回撤强度：从20天最高点的回撤幅度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        high1 = data1['high'].tail(20).max()
+        high2 = data2['high'].tail(20).max()
+        pull1 = (high1 - data1['close'].iloc[-1]) / high1 * 100
+        pull2 = (high2 - data2['close'].iloc[-1]) / high2 * 100
+        max_pull = max(pull1, pull2, 1e-6)
+        return 10 - min(pull1 / max_pull * 10, 10), 10 - min(pull2 / max_pull * 10, 10)
+
+class IntradayPriceEfficiencyAnalysis(AnalysisModule):
+    """日内价格效率：收盘价接近高点或低点的程度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        eff1 = min((data1['close'] - data1['low']) / (data1['high'] - data1['low'])).tail(10).mean() * 10
+        eff2 = min((data2['close'] - data2['low']) / (data2['high'] - data2['low'])).tail(10).mean() * 10
+        return min(max(eff1, 0), 10), min(max(eff2, 0), 10)
+
+class PricePressureAnalysis(AnalysisModule):
+    """价格压力：收盘价接近日内高点或低点的偏向"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        press1 = ((data1['close'] - data1['low']) - (data1['high'] - data1['close'])).tail(20).mean() / data1['close'].mean() * 1000
+        press2 = ((data2['close'] - data2['low']) - (data2['high'] - data2['close'])).tail(20).mean() / data2['close'].mean() * 1000
+        return min(max(press1 + 5, 0), 10), min(max(press2 + 5, 0), 10)
+
+class VolumeWeightedVolatilityAnalysis(AnalysisModule):
+    """成交量加权波动性：波动与成交量的关系"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        vol1 = ((data1['high'] - data1['low']) * data1['volume']).tail(20).mean() / data1['volume'].tail(20).mean()
+        vol2 = ((data2['high'] - data2['low']) * data2['volume']).tail(20).mean() / data2['volume'].tail(20).mean()
+        max_vol = max(vol1, vol2, 1e-6)
+        return 10 - min(vol1 / max_vol * 10, 10), 10 - min(vol2 / max_vol * 10, 10)
+
+class PriceMomentumDivergenceAnalysis(AnalysisModule):
+    """价格动能背离：价格变化与趋势动能的差异"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        chg1 = data1['close'].pct_change().tail(20).mean()
+        chg2 = data2['close'].pct_change().tail(20).mean()
+        accel1 = data1['close'].diff().diff().tail(20).mean()
+        accel2 = data2['close'].diff().diff().tail(20).mean()
+        div1 = abs(chg1 - accel1 / data1['close'].mean() * 1000) * 10
+        div2 = abs(chg2 - accel2 / data2['close'].mean() * 1000) * 10
+        return 10 - min(div1, 10), 10 - min(div2, 10)
+
+class PriceClusterAnalysis(AnalysisModule):
+    """价格聚集度：价格围绕均值的分布集中度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        ma1 = data1['close'].rolling(window=20).mean()
+        ma2 = data2['close'].rolling(window=20).mean()
+        clust1 = (data1['close'] - ma1).abs().tail(20).mean() / data1['close'].mean() * 100
+        clust2 = (data2['close'] - ma2).abs().tail(20).mean() / data2['close'].mean() * 100
+        max_clust = max(clust1, clust2, 1e-6)
+        return 10 - min(clust1 / max_clust * 10, 10), 10 - min(clust2 / max_clust * 10, 10)
+
+class IntradayTrendStrengthAnalysis(AnalysisModule):
+    """日内趋势强度：开盘-收盘变化的方向性占比"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        trend1 = (data1['close'] - data1['open']).tail(20).mean() / data1['close'].mean() * 1000
+        trend2 = (data2['close'] - data2['open']).tail(20).mean() / data2['close'].mean() * 1000
+        return min(max(trend1 + 5, 0), 10), min(max(trend2 + 5, 0), 10)
+
+class PriceExpansionAnalysis(AnalysisModule):
+    """价格扩展性：20天内价格突破高低点的频率"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        expand1 = ((data1['high'] > data1['high'].shift().rolling(window=20).max()) | 
+                   (data1['low'] < data1['low'].shift().rolling(window=20).min())).tail(20).mean() * 10
+        expand2 = ((data2['high'] > data2['high'].shift().rolling(window=20).max()) | 
+                   (data2['low'] < data2['low'].shift().rolling(window=20).min())).tail(20).mean() * 10
+        return min(max(expand1, 0), 10), min(max(expand2, 0), 10)
+
+class MarketTensionAnalysis(AnalysisModule):
+    """市场张力：价格与成交量的日内动态平衡"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        tension1 = ((data1['close'] - data1['open']).abs() / data1['volume']).tail(20).mean() * 1000
+        tension2 = ((data2['close'] - data2['open']).abs() / data2['volume']).tail(20).mean() * 1000
+        max_tension = max(tension1, tension2, 1e-6)
+        return min(tension1 / max_tension * 10, 10), min(tension2 / max_tension * 10, 10)
+
+class PricePathEfficiencyAnalysis(AnalysisModule):
+    """价格路径效率：价格变化的直线性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        path1 = abs(data1['close'].iloc[-1] - data1['close'].iloc[-20]) / (data1['close'].diff().abs().tail(20).sum())
+        path2 = abs(data2['close'].iloc[-1] - data2['close'].iloc[-20]) / (data2['close'].diff().abs().tail(20).sum())
+        return min(max(path1 * 10, 0), 10), min(max(path2 * 10, 0), 10)
+
+class VolatilityCompressionAnalysis(AnalysisModule):
+    """波动压缩：10天内波动幅度的收敛性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        vol1 = (data1['high'] - data1['low']).tail(10).std() / (data1['high'] - data1['low']).tail(10).mean()
+        vol2 = (data2['high'] - data2['low']).tail(10).std() / (data2['high'] - data2['low']).tail(10).mean()
+        max_vol = max(vol1, vol2, 1e-6)
+        return 10 - min(vol1 / max_vol * 10, 10), 10 - min(vol2 / max_vol * 10, 10)
+    
+# 新增 15 个创新 Analysis 类
+class IntradaySwingTimingAnalysis(AnalysisModule):
+    """日内波动时机：高低点出现的时间偏向"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def swing_timing(df):
+            high_idx = (df['high'] - df['open']).abs() / (df['high'] - df['low'])  # 高点偏向开盘
+            low_idx = (df['low'] - df['open']).abs() / (df['high'] - df['low'])   # 低点偏向开盘
+            return (high_idx - low_idx).tail(20).mean() * 5 + 5  # 平衡性
+        time1 = swing_timing(data1)
+        time2 = swing_timing(data2)
+        return min(max(time1, 0), 10), min(max(time2, 0), 10)
+
+class PriceSpikeFrequencyAnalysis(AnalysisModule):
+    """价格尖峰频率：日内波动超过均值2倍的次数"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def spike_freq(df):
+            daily_range = (df['high'] - df['low'])
+            mean_range = daily_range.mean()
+            spikes = (daily_range > 2 * mean_range).tail(20).mean() * 10
+            return spikes
+        freq1 = spike_freq(data1)
+        freq2 = spike_freq(data2)
+        return min(max(freq1, 0), 10), min(max(freq2, 0), 10)
+
+class IntradayMomentumShiftAnalysis(AnalysisModule):
+    """日内动能转换：开盘-最高/最低到收盘的变化强度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def shift_strength(df):
+            open_high = (df['high'] - df['open']) / df['open']
+            high_close = (df['close'] - df['high']) / df['high']
+            shift = (open_high - high_close).abs().tail(20).mean() * 10
+            return shift
+        shift1 = shift_strength(data1)
+        shift2 = shift_strength(data2)
+        return min(max(shift1, 0), 10), min(max(shift2, 0), 10)
+
+class MarketEmotionVolatilityAnalysis(AnalysisModule):
+    """市场情绪波动：成交量/持仓量比率的波动性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        emo1 = (data1['volume'] / data1['position']).std() / (data1['volume'] / data1['position']).mean()
+        emo2 = (data2['volume'] / data2['position']).std() / (data2['volume'] / data2['position']).mean()
+        max_emo = max(emo1, emo2, 1e-6)
+        return 10 - min(emo1 / max_emo * 10, 10), 10 - min(emo2 / max_emo * 10, 10)
+
+class PriceLevelStickinessAnalysis(AnalysisModule):
+    """价格水平粘性：价格重复出现的频率"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def stickiness(df):
+            unique_counts = df['close'].tail(20).value_counts()
+            return (unique_counts.max() / 20) * 10  # 最高重复占比
+        stick1 = stickiness(data1)
+        stick2 = stickiness(data2)
+        return min(max(stick1, 0), 10), min(max(stick2, 0), 10)
+
+class SupportBreakFrequencyAnalysis(AnalysisModule):
+    """支撑突破频率：价格跌破20天最低点的次数"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def break_freq(df):
+            low_20 = df['low'].rolling(window=20).min().shift()
+            breaks = (df['low'] < low_20).tail(20).mean() * 10
+            return breaks
+        freq1 = break_freq(data1)
+        freq2 = break_freq(data2)
+        return 10 - min(freq1, 10), 10 - min(freq2, 10)  # 突破少得分高
+
+class ResistanceBreakFrequencyAnalysis(AnalysisModule):
+    """阻力突破频率：价格突破20天最高点的次数"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def break_freq(df):
+            high_20 = df['high'].rolling(window=20).max().shift()
+            breaks = (df['high'] > high_20).tail(20).mean() * 10
+            return breaks
+        freq1 = break_freq(data1)
+        freq2 = break_freq(data2)
+        return min(max(freq1, 0), 10), min(max(freq2, 0), 10)
+
+class PriceLevelTransitionAnalysis(AnalysisModule):
+    """价格水平过渡：价格跨越关键区间的速度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def transition_speed(df):
+            range_20 = df['high'].tail(20).max() - df['low'].tail(20).min()
+            speed = range_20 / df['close'].diff().abs().tail(20).mean()
+            return 10 / speed * 10 if speed != 0 else 5
+        speed1 = transition_speed(data1)
+        speed2 = transition_speed(data2)
+        return min(max(speed1, 0), 10), min(max(speed2, 0), 10)
+
+class IntradayPriceRangeDistributionAnalysis(AnalysisModule):
+    """日内价格范围分布：高低价差的偏态"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        range_skew1 = skew((data1['high'] - data1['low']).tail(20))
+        range_skew2 = skew((data2['high'] - data2['low']).tail(20))
+        return min(max(range_skew1 + 5, 0), 10), min(max(range_skew2 + 5, 0), 10)
+
+class MarketParticipationBalanceAnalysis(AnalysisModule):
+    """市场参与平衡：成交量/持仓量比率的稳定性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        bal1 = (data1['volume'] / data1['position']).tail(20).std()
+        bal2 = (data2['volume'] / data2['position']).tail(20).std()
+        max_bal = max(bal1, bal2, 1e-6)
+        return 10 - min(bal1 / max_bal * 10, 10), 10 - min(bal2 / max_bal * 10, 10)
+
+class PriceStructureDensityAnalysis(AnalysisModule):
+    """价格结构密度：价格区间内数据的集中度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def density(df):
+            bins = np.histogram(df['close'].tail(20), bins=5)[0]
+            return bins.max() / 20 * 10  # 最高密度占比
+        dens1 = density(data1)
+        dens2 = density(data2)
+        return min(max(dens1, 0), 10), min(max(dens2, 0), 10)
+
+class IntradayPriceSymmetryAnalysis(AnalysisModule):
+    """日内价格对称性：开盘-收盘与高低点的对称程度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        sym1 = abs((data1['close'] - data1['open']) - (data1['high'] - data1['low'])).tail(20).mean() / data1['close'].mean() * 1000
+        sym2 = abs((data2['close'] - data2['open']) - (data2['high'] - data2['low'])).tail(20).mean() / data2['close'].mean() * 1000
+        max_sym = max(sym1, sym2, 1e-6)
+        return 10 - min(sym1 / max_sym * 10, 10), 10 - min(sym2 / max_sym * 10, 10)
+
+class MarketDepthImpactAnalysis(AnalysisModule):
+    """市场深度影响：成交量冲击下的价格稳定性"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        impact1 = (data1['close'].diff().abs() / data1['volume']).tail(20).mean() * 1000
+        impact2 = (data2['close'].diff().abs() / data2['volume']).tail(20).mean() * 1000
+        max_impact = max(impact1, impact2, 1e-6)
+        return 10 - min(impact1 / max_impact * 10, 10), 10 - min(impact2 / max_impact * 10, 10)
+
+class PriceMomentumReboundAnalysis(AnalysisModule):
+    """价格动能反弹：跌幅后反弹的强度"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def rebound(df):
+            drops = df['close'].diff().tail(20) < 0
+            rebounds = df['close'].diff().shift(-1).tail(20)[drops].mean()
+            return rebounds / df['close'].mean() * 1000 + 5 if not np.isnan(rebounds) else 5
+        reb1 = rebound(data1)
+        reb2 = rebound(data2)
+        return min(max(reb1, 0), 10), min(max(reb2, 0), 10)
+
+class PriceVolatilityCycleAnalysis(AnalysisModule):
+    """价格波动周期性：20天波动幅度的周期特征"""
+    def analyze(self, data1: pd.DataFrame, data2: pd.DataFrame) -> Tuple[float, float]:
+        def cycle(df):
+            ranges = (df['high'] - df['low']).tail(20)
+            fft = np.abs(np.fft.fft(ranges - ranges.mean()))[1:10]  # 取低频分量
+            return fft.max() / fft.mean() * 2  # 周期性强弱
+        cyc1 = cycle(data1)
+        cyc2 = cycle(data2)
+        return min(max(cyc1, 0), 10), min(max(cyc2, 0), 10)
+21：/src/scoring/evaluator.py
+from typing import List, Dict
+from .analyses import AnalysisModule
+import pandas as pd
+
+class StrengthEvaluator:
+    def __init__(self, analysis_modules: List[AnalysisModule], weights: Dict[str, float]):
+        self.modules = analysis_modules
+        self.weights = weights
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> Dict[str, float]:
+        scores = {f"contract{i+1}": 0 for i in range(len(datasets))}
+        for module in self.modules:
+            name = module.__class__.__name__
+            module_scores = module.analyze(datasets)
+            for contract, score in module_scores.items():
+                scores[contract] += score * self.weights.get(name, 1.0)
+        total_weight = sum(self.weights.values())
+        return {contract: score / total_weight for contract, score in scores.items()}
+22：/src/scoring/main_scoring.py文件内容是：
+# src/scoring/main_scoring.py
+import json
+import os
+import pandas as pd
+import logging
+from ..logging_utils import setup_logging
+from ..data_processor import DataProcessor
+from .evaluator import StrengthEvaluator
+from .analyses import (
+    PriceTrendAccelerationAnalysis, IntradayVolatilityAnalysis, PriceSkewnessAnalysis,
+    PriceKurtosisAnalysis, PriceCompressionAnalysis, IntradayReversalAnalysis,
+    PriceMeanReversionAnalysis, TrendDirectionConsistencyAnalysis, PriceBounceStrengthAnalysis,
+    PricePullbackStrengthAnalysis, IntradayPriceEfficiencyAnalysis, PricePressureAnalysis,
+    VolumeWeightedVolatilityAnalysis, PriceMomentumDivergenceAnalysis, PriceClusterAnalysis,
+    IntradayTrendStrengthAnalysis, PriceExpansionAnalysis, MarketTensionAnalysis,
+    PricePathEfficiencyAnalysis, VolatilityCompressionAnalysis,
+    IntradaySwingTimingAnalysis, PriceSpikeFrequencyAnalysis, IntradayMomentumShiftAnalysis,
+    MarketEmotionVolatilityAnalysis, PriceLevelStickinessAnalysis, SupportBreakFrequencyAnalysis,
+    ResistanceBreakFrequencyAnalysis, PriceLevelTransitionAnalysis, IntradayPriceRangeDistributionAnalysis,
+    MarketParticipationBalanceAnalysis, PriceStructureDensityAnalysis, IntradayPriceSymmetryAnalysis,
+    MarketDepthImpactAnalysis, PriceMomentumReboundAnalysis, PriceVolatilityCycleAnalysis
+)
+from ..recommender import ScoringTradeRecommender
+
+def main_scoring(global_config_path="../config.json", scoring_config_path="scoring_config.json"):  # 修改为上级目录路径
+    setup_logging(log_file_path="../../results/scoring_log.log", level=logging.INFO)
+    logging.info("开始运行 Scoring 方法")
+
+    with open(global_config_path, "r") as f:
+        global_config = json.load(f)
+    with open(scoring_config_path, "r") as f:
+        scoring_config = json.load(f)
+
+    if "data_groups" not in global_config:
+        raise ValueError("全局配置缺少 'data_groups'")
+    if "weights" not in scoring_config:
+        raise ValueError("打分配置缺少 'weights'")
+
+    os.makedirs("../../results", exist_ok=True)
+
+    for group_idx, data_files in enumerate(global_config["data_groups"]):
+        logging.info(f"处理第 {group_idx + 1} 组数据: {data_files}")
+        processors = [DataProcessor(f"../../data/{path}") for path in data_files]
+        datasets = [p.clean_data() for p in processors]
+        symbols = [path.split('.')[0] for path in data_files]
+        for i, data in enumerate(datasets):
+            data.set_index('date', inplace=True)
+        common_index = datasets[0].index.intersection(datasets[1].index)
+        datasets = [data.loc[common_index].reset_index() for data in datasets]
+        logging.info("数据加载完成，时间对齐至重叠期")
+
+        modules = [
+            PriceTrendAccelerationAnalysis(), IntradayVolatilityAnalysis(), PriceSkewnessAnalysis(),
+            PriceKurtosisAnalysis(), PriceCompressionAnalysis(), IntradayReversalAnalysis(),
+            PriceMeanReversionAnalysis(), TrendDirectionConsistencyAnalysis(), PriceBounceStrengthAnalysis(),
+            PricePullbackStrengthAnalysis(), IntradayPriceEfficiencyAnalysis(), PricePressureAnalysis(),
+            VolumeWeightedVolatilityAnalysis(), PriceMomentumDivergenceAnalysis(), PriceClusterAnalysis(),
+            IntradayTrendStrengthAnalysis(), PriceExpansionAnalysis(), MarketTensionAnalysis(),
+            PricePathEfficiencyAnalysis(), VolatilityCompressionAnalysis(),
+            IntradaySwingTimingAnalysis(), PriceSpikeFrequencyAnalysis(), IntradayMomentumShiftAnalysis(),
+            MarketEmotionVolatilityAnalysis(), PriceLevelStickinessAnalysis(), SupportBreakFrequencyAnalysis(),
+            ResistanceBreakFrequencyAnalysis(), PriceLevelTransitionAnalysis(), IntradayPriceRangeDistributionAnalysis(),
+            MarketParticipationBalanceAnalysis(), PriceStructureDensityAnalysis(), IntradayPriceSymmetryAnalysis(),
+            MarketDepthImpactAnalysis(), PriceMomentumReboundAnalysis(), PriceVolatilityCycleAnalysis()
+        ]
+        weights = scoring_config.get("weights", {m.__class__.__name__: 1.0 for m in modules})
+        evaluator = StrengthEvaluator(modules, weights)
+        results = evaluator.evaluate(datasets)
+        logging.info("打分计算完成")
+
+        print("得分结果:")
+        for contract, score in results.items():
+            symbol = symbols[int(contract[-1]) - 1]
+            print(f"{symbol:<15} {score:.2f}")
+
+        recommender = ScoringTradeRecommender(global_config["market_direction"])
+        advice = recommender.recommend(results, "scoring", symbols, group_idx, datasets)
+        print(f"交易建议: {advice}")
+        logging.info(f"交易建议生成: {advice}")
+
+    logging.info("Scoring 方法运行完成")
+
+if __name__ == "__main__":
+    main_scoring()
+23：/src/scoring/Scoring_Analyses.md文件内容是：
+# 35 个打分法 Analysis 类的含义与作用
+
+以下是基于期货市场数据（`SHFE.rb2510` 和 `SHFE.rb2505`）设计的 35 个 `Analysis` 类，用于打分法（`scoring`）模块，旨在比较合约的相对强弱。这些类已实现于 `src/scoring/analyses.py`，从趋势、日内波动、市场情绪、价格结构等多维度出发，避免高重复性。每个类的含义和作用如下，返回值为两组数据的得分元组 `(score1, score2)`，范围 0-10。
+
+---
+
+## 1. PriceTrendAccelerationAnalysis
+
+- **含义**: 最近 20 天价格变化率的趋势变化（二阶导数），反映趋势加速度。
+- **作用**: 加速上涨的合约得分高，体现趋势动能的动态增强。
+- **创新点**: 聚焦趋势的加速度变化。
+
+---
+
+## 2. IntradayVolatilityAnalysis
+
+- **含义**: 开盘-收盘与高低价差的相对强度，衡量日内波动效率。
+- **作用**: 波动效率高的合约得分高，反映日内稳定性。
+- **创新点**: 分析日内波动比例。
+
+---
+
+## 3. PriceSkewnessAnalysis
+
+- **含义**: 20 天收盘价分布的偏态，反映价格波动的非对称性。
+- **作用**: 正偏度的合约得分高，表明上涨潜力。
+- **创新点**: 统计偏度量化强弱。
+
+---
+
+## 4. PriceKurtosisAnalysis
+
+- **含义**: 20 天收盘价分布的尖峰程度，反映价格集中性。
+- **作用**: 峰度低的合约得分高，体现波动均匀性。
+- **创新点**: 峰度分析分布特性。
+
+---
+
+## 5. PriceCompressionAnalysis
+
+- **含义**: 20 天内价格波动的收敛性，衡量波动压缩程度。
+- **作用**: 波动收敛的合约得分高，可能预示突破。
+- **创新点**: 关注波动压缩动态。
+
+---
+
+## 6. IntradayReversalAnalysis
+
+- **含义**: 开盘-收盘方向与高低点位置的反转幅度，衡量日内反转强度。
+- **作用**: 反转强的合约得分高，反映买卖力量。
+- **创新点**: 日内反转量化。
+
+---
+
+## 7. PriceMeanReversionAnalysis
+
+- **含义**: 价格向 20 天均线的回归速度。
+- **作用**: 回归快的合约得分高，体现均值回归倾向。
+- **创新点**: 动态回归速度分析。
+
+---
+
+## 8. TrendDirectionConsistencyAnalysis
+
+- **含义**: 20 天内价格方向的连续性比例。
+- **作用**: 方向一致性高的合约得分高，反映趋势稳定性。
+- **创新点**: 量化趋势连续性。
+
+---
+
+## 9. PriceBounceStrengthAnalysis
+
+- **含义**: 从 20 天最低点的反弹幅度。
+- **作用**: 反弹强的合约得分高，体现支撑力度。
+- **创新点**: 支撑点的动态反应。
+
+---
+
+## 10. PricePullbackStrengthAnalysis
+
+- **含义**: 从 20 天最高点的回撤幅度。
+- **作用**: 回撤小的合约得分高，体现突破阻力能力。
+- **创新点**: 回撤行为分析。
+
+---
+
+## 11. IntradayPriceEfficiencyAnalysis
+
+- **含义**: 收盘价接近高点或低点的平均程度，衡量日内效率。
+- **作用**: 效率高的合约得分高，反映日内趋势确定性。
+- **创新点**: 日内价格分布效率。
+
+---
+
+## 12. PricePressureAnalysis
+
+- **含义**: 收盘价偏向高点或低点的压力方向。
+- **作用**: 偏向上涨压力的合约得分高，体现市场情绪。
+- **创新点**: 量化日内压力方向。
+
+---
+
+## 13. VolumeWeightedVolatilityAnalysis
+
+- **含义**: 成交量加权的高低价差，衡量波动与市场参与的关系。
+- **作用**: 波动稳定的合约得分高，标准化避免绝对量影响。
+- **创新点**: 结合成交量权重分析波动。
+
+---
+
+## 14. PriceMomentumDivergenceAnalysis
+
+- **含义**: 价格变化与加速度的背离程度。
+- **作用**: 背离小的合约得分高，体现趋势可靠性。
+- **创新点**: 动态背离分析。
+
+---
+
+## 15. PriceClusterAnalysis
+
+- **含义**: 价格围绕 20 天均值的集中度。
+- **作用**: 集中度高的合约得分高，反映价格稳定性。
+- **创新点**: 从分布角度分析聚集性。
+
+---
+
+## 16. IntradayTrendStrengthAnalysis
+
+- **含义**: 开盘-收盘变化的平均方向强度。
+- **作用**: 趋势方向强的合约得分高，体现日内动能。
+- **创新点**: 日内趋势方向量化。
+
+---
+
+## 17. PriceExpansionAnalysis
+
+- **含义**: 20 天内价格突破前期高低点的频率。
+- **作用**: 突破频次高的合约得分高，反映扩展潜力。
+- **创新点**: 关注价格扩展行为。
+
+---
+
+## 18. MarketTensionAnalysis
+
+- **含义**: 价格变化与成交量的日内动态平衡。
+- **作用**: 张力小的合约得分高，体现市场平稳性。
+- **创新点**: 跳出指标，分析市场张力。
+
+---
+
+## 19. PricePathEfficiencyAnalysis
+
+- **含义**: 20 天内价格变化的直线性（实际变化/总波动）。
+- **作用**: 路径效率高的合约得分高，反映趋势效率。
+- **创新点**: 从路径角度分析趋势。
+
+---
+
+## 20. VolatilityCompressionAnalysis
+
+- **含义**: 10 天内高低价差波动性的收敛程度。
+- **作用**: 收敛强的合约得分高，可能预示突破。
+- **创新点**: 波动动态压缩分析。
+
+---
+
+## 21. HighLowTimingAnalysis
+
+- **含义**: 日内高低点偏离均值的倾向性，反映波动时间分布。
+- **作用**: 分布均衡的合约得分高，体现日内稳定性。
+- **创新点**: 高低点时间分布分析。
+
+---
+
+## 22. PriceShadowRatioAnalysis
+
+- **含义**: 上下影线长度的不对称性，衡量日内延伸方向。
+- **作用**: 影线均衡的合约得分高，反映市场平衡性。
+- **创新点**: 影线结构分析。
+
+---
+
+## 23. PricePivotStrengthAnalysis
+
+- **含义**: 20 天内支撑/阻力点的波动性，衡量结构稳定性。
+- **作用**: 枢轴稳定的合约得分高，体现支撑/阻力可靠性。
+- **创新点**: 价格结构稳定性分析。
+
+---
+
+## 24. IntradayMomentumShiftAnalysis
+
+- **含义**: 开盘-高点与低点-收盘的相对强度，衡量日内动能转移。
+- **作用**: 动能转移强的合约得分高，反映日内趋势方向性。
+- **创新点**: 日内动能分布。
+
+---
+
+## 25. PriceGapPersistenceAnalysis
+
+- **含义**: 跳空幅度与后续波动的比率，衡量跳空持续性。
+- **作用**: 持续性强的合约得分高，体现市场反应。
+- **创新点**: 跳空行为分析。
+
+---
+
+## 26. MarketDepthPressureAnalysis
+
+- **含义**: 成交量与价格波动的相对关系，反映市场深度压力。
+- **作用**: 压力小的合约得分高，体现流动性。
+- **创新点**: 市场深度视角。
+
+---
+
+## 27. PriceRotationAnalysis
+
+- **含义**: 20 天内价格围绕均值的旋转频率。
+- **作用**: 旋转少的合约得分高，体现趋势稳定性。
+- **创新点**: 价格旋转行为。
+
+---
+
+## 28. IntradayPriceSpreadAnalysis
+
+- **含义**: 高低点范围超出开收盘范围的扩展程度。
+- **作用**: 扩展小的合约得分高，体现波动控制。
+- **创新点**: 日内波动扩展分析。
+
+---
+
+## 29. PriceBreakoutFailureAnalysis
+
+- **含义**: 20 天内突破高点后回撤的频率。
+- **作用**: 失败率低的合约得分高，体现突破可靠性。
+- **创新点**: 突破失败行为。
+
+---
+
+## 30. MarketSentimentShiftAnalysis
+
+- **含义**: 成交量加权价格变化的方向性，反映市场情绪。
+- **作用**: 情绪偏正的合约得分高，体现市场信心。
+- **创新点**: 间接情绪分析。
+
+---
+
+## 31. PriceVelocityAsymmetryAnalysis
+
+- **含义**: 上涨与下跌速度的差异，衡量移动不对称性。
+- **作用**: 上涨速度占优的合约得分高，体现多头力量。
+- **创新点**: 速度不对称性。
+
+---
+
+## 32. IntradayPriceCenterAnalysis
+
+- **含义**: 收盘价与高低点中点的偏离，衡量日内中心稳定性。
+- **作用**: 偏离小的合约得分高，体现均衡性。
+- **创新点**: 日内中心分布。
+
+---
+
+## 33. PriceStructureComplexityAnalysis
+
+- **含义**: 20 天内价格波动的分形维度近似，反映结构复杂性。
+- **作用**: 复杂性低的合约得分高，体现简单趋势。
+- **创新点**: 结构复杂性分析。
+
+---
+
+## 34. VolumePressureDistributionAnalysis
+
+- **含义**: 成交量在高低极值的分布关联性。
+- **作用**: 分布均衡的合约得分高，体现压力平衡。
+- **创新点**: 成交量分布分析。
+
+---
+
+## 35. PriceTrendRotationAnalysis
+
+- **含义**: 20 天内价格围绕高低点的旋转频率。
+- **作用**: 旋转少的合约得分高，体现趋势稳定性。
+- **创新点**: 从旋转行为分析趋势。
+
+---
+
+## 设计说明
+
+- **多维度来源**:
+  - **趋势**: `PriceTrendAccelerationAnalysis`, `TrendDirectionConsistencyAnalysis` 等，分析趋势动态。
+  - **日内波动**: `IntradayVolatilityAnalysis`, `IntradayReversalAnalysis` 等，捕捉日内特性。
+  - **市场情绪**: `MarketTensionAnalysis`, `MarketSentimentShiftAnalysis` 等，间接反映情绪。
+  - **价格结构**: `PricePivotStrengthAnalysis`, `PriceStructureComplexityAnalysis` 等，分析结构特性。
+- **低重复性**:
+  - 与趋势相关的类从加速度、一致性、旋转等多角度切入，避免单一趋势分析。
+  - 日内波动类关注效率、反转、压力等不同方面，互补性强。
+- **数据支持**: 基于 `open`, `high`, `low`, `close`, `volume`, `amount`, `position`，重叠期 2024-10-16 至 2025-02-20（79 天）。
+
+---
+
+## 使用说明
+
+这些 `Analysis` 类已实现于 `src/scoring/analyses.py`，适用于打分法模块。基于 `SHFE.rb2510` 和 `SHFE.rb2505` 数据，可通过 `main_scoring.py` 运行，返回两合约的强弱得分。
+24：/src/scoring/scoring_config.json文件是这样的：
+{
+    "weights": {
+        "PriceTrendAccelerationAnalysis": 1.0,
+        "IntradayVolatilityAnalysis": 1.0,
+        "PriceSkewnessAnalysis": 1.0,
+        "PriceKurtosisAnalysis": 1.0,
+        "PriceCompressionAnalysis": 1.0,
+        "IntradayReversalAnalysis": 1.0,
+        "PriceMeanReversionAnalysis": 1.0,
+        "TrendDirectionConsistencyAnalysis": 1.0,
+        "PriceBounceStrengthAnalysis": 1.0,
+        "PricePullbackStrengthAnalysis": 1.0,
+        "IntradayPriceEfficiencyAnalysis": 1.0,
+        "PricePressureAnalysis": 1.0,
+        "VolumeWeightedVolatilityAnalysis": 1.0,
+        "PriceMomentumDivergenceAnalysis": 1.0,
+        "PriceClusterAnalysis": 1.0,
+        "IntradayTrendStrengthAnalysis": 1.0,
+        "PriceExpansionAnalysis": 1.0,
+        "MarketTensionAnalysis": 1.0,
+        "PricePathEfficiencyAnalysis": 1.0,
+        "VolatilityCompressionAnalysis": 1.0,
+        "HighLowTimingAnalysis": 1.0,
+        "PriceShadowRatioAnalysis": 1.0,
+        "PricePivotStrengthAnalysis": 1.0,
+        "IntradayMomentumShiftAnalysis": 1.0,
+        "PriceGapPersistenceAnalysis": 1.0,
+        "MarketDepthPressureAnalysis": 1.0,
+        "PriceRotationAnalysis": 1.0,
+        "IntradayPriceSpreadAnalysis": 1.0,
+        "PriceBreakoutFailureAnalysis": 1.0,
+        "MarketSentimentShiftAnalysis": 1.0,
+        "PriceVelocityAsymmetryAnalysis": 1.0,
+        "IntradayPriceCenterAnalysis": 1.0,
+        "PriceStructureComplexityAnalysis": 1.0,
+        "VolumePressureDistributionAnalysis": 1.0,
+        "PriceTrendRotationAnalysis": 1.0
+    }
+}
+25：src/stats/evaluator.py 文件内容是：
+# src/stats/evaluator.py
+from abc import ABC, abstractmethod
+from typing import List, Dict
+import pandas as pd
+import numpy as np
+
+class Stat(ABC):
+    """统计方法基类"""
+    @abstractmethod
+    def compute(self, data: pd.DataFrame) -> float:
+        """计算单个合约的统计得分"""
+        pass
+
+class ReturnStat(Stat):
+    """收益率统计"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> float:
+        recent = data.tail(self.window)
+        return (recent['close'].iloc[-1] - recent['close'].iloc[0]) / recent['close'].iloc[0]
+
+class VolatilityStat(Stat):
+    """波动率统计（基于高低价差的标准差）"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def compute(self, data: pd.DataFrame) -> float:
+        recent = data.tail(self.window)
+        return (recent['high'] - recent['low']).std()
+
+class SharpeStat(Stat):
+    """夏普比率统计（收益率/波动率）"""
+    def __init__(self, window: int = 20, risk_free_rate: float = 0.0):
+        self.window = window
+        self.risk_free_rate = risk_free_rate
+
+    def compute(self, data: pd.DataFrame) -> float:
+        recent = data.tail(self.window)
+        returns = recent['close'].pct_change().dropna()
+        excess_return = returns.mean() - self.risk_free_rate / (self.window * 5)  # 每日调整
+        volatility = returns.std()
+        return excess_return / volatility if volatility != 0 else 0.0
+
+class StatsEvaluator:
+    """统计评估器"""
+    def __init__(self, stats: List[Stat], weights: Dict[str, float] = None):
+        self.stats = stats
+        self.weights = weights or {stat.__class__.__name__: 1.0 for stat in stats}
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> Dict[str, float]:
+        """综合多个统计方法评估强弱"""
+        scores = {}
+        for i, data in enumerate(datasets):
+            total_score = 0.0
+            for stat in self.stats:
+                stat_name = stat.__class__.__name__
+                score = stat.compute(data)
+                # 标准化处理：收益率正向，波动率反向，夏普正向
+                if stat_name == "VolatilityStat":
+                    score = -score / 1000  # 波动率反向，缩放
+                total_score += score * self.weights.get(stat_name, 1.0)
+            scores[f"contract{i+1}"] = total_score / sum(self.weights.values()) if self.weights else 0.0
+        return scores
+26：/src/timeseries/evaluator.py文件内容是这样的：
+# src/timeseries/evaluator.py
+from abc import ABC, abstractmethod
+from typing import List, Dict
+import pandas as pd
+import numpy as np
+from statsmodels.tsa.arima.model import ARIMA
+from arch import arch_model
+from statsmodels.tsa.holtwinters import ExponentialSmoothing
+
+class TimeSeriesModel(ABC):
+    """时间序列模型基类"""
+    @abstractmethod
+    def fit_and_forecast(self, data: pd.DataFrame) -> float:
+        """拟合模型并预测趋势得分"""
+        pass
+
+class ARIMAModel(TimeSeriesModel):
+    """ARIMA模型"""
+    def __init__(self, window: int = 50, order: tuple = (1, 1, 1), field: str = "close"):
+        self.window = window
+        self.order = order
+        self.field = field
+
+    def fit_and_forecast(self, data: pd.DataFrame) -> float:
+        series = data[self.field].tail(self.window)
+        try:
+            model = ARIMA(series, order=self.order).fit()
+            forecast = model.forecast(steps=1)[0]
+            return (forecast - series.iloc[-1]) / series.iloc[-1]  # 预测变化率
+        except:
+            return 0.0  # 如果失败，返回中性
+
+class GARCHModel(TimeSeriesModel):
+    """GARCH模型（预测波动率）"""
+    def __init__(self, window: int = 50, p: int = 1, q: int = 1, field: str = "close"):
+        self.window = window
+        self.p = p
+        self.q = q
+        self.field = field
+
+    def fit_and_forecast(self, data: pd.DataFrame) -> float:
+        series = data[self.field].pct_change().dropna().tail(self.window)
+        try:
+            model = arch_model(series, vol='Garch', p=self.p, q=self.q).fit(disp='off')
+            forecast = model.forecast(horizon=1).variance.iloc[-1, 0]
+            return -forecast / 1000  # 波动率反向，缩放
+        except:
+            return 0.0
+
+class HoltWintersModel(TimeSeriesModel):
+    """Holt-Winters模型（指数平滑）"""
+    def __init__(self, window: int = 50, seasonal_periods: int = 12, field: str = "close"):
+        self.window = window
+        self.seasonal_periods = seasonal_periods
+        self.field = field
+
+    def fit_and_forecast(self, data: pd.DataFrame) -> float:
+        series = data[self.field].tail(self.window)
+        try:
+            model = ExponentialSmoothing(series, seasonal='add', seasonal_periods=self.seasonal_periods).fit()
+            forecast = model.forecast(1).iloc[0]
+            return (forecast - series.iloc[-1]) / series.iloc[-1]
+        except:
+            return 0.0
+
+class TimeSeriesEvaluator:
+    """时间序列评估器"""
+    def __init__(self, models: List[TimeSeriesModel], weights: Dict[str, float] = None):
+        self.models = models
+        self.weights = weights or {model.__class__.__name__: 1.0 for model in models}
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> Dict[str, float]:
+        """综合多个时间序列模型评估强弱"""
+        scores = {}
+        for i, data in enumerate(datasets):
+            total_score = 0.0
+            for model in self.models:
+                model_name = model.__class__.__name__
+                score = model.fit_and_forecast(data)
+                total_score += score * self.weights.get(model_name, 1.0)
+            scores[f"contract{i+1}"] = total_score / sum(self.weights.values()) if self.weights else 0.0
+        return scores
+27：/src/reles/evaluator.py文件内容是这样的：
+# src/rules/evaluator.py
+from abc import ABC, abstractmethod
+from typing import List, Dict, Tuple
+import pandas as pd
+import numpy as np
+import logging
+
+class Rule(ABC):
+    """规则基类，每个具体规则需实现 evaluate 方法"""
+    @abstractmethod
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        """评估规则，返回是否满足、置信度和解释。
+        Args:
+            features (pd.DataFrame): 单个合约的特征数据
+        Returns:
+            Tuple[bool, float, str]: (是否满足, 置信度, 解释)
+        """
+        pass
+
+class BreakoutMARule(Rule):
+    """规则：价格突破均线，阈值随波动率动态调整"""
+    def __init__(self, window: int = 20, volatility_factor: float = 0.01):
+        self.window = window
+        self.volatility_factor = volatility_factor
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        ma = recent['close'].mean()
+        latest_close = recent['close'].iloc[-1]
+        volatility = features['market_volatility'].iloc[-1] if 'market_volatility' in features else 0.01
+        threshold = ma * (1 + self.volatility_factor * volatility)
+        is_met = latest_close > threshold
+        confidence = min((latest_close - threshold) / threshold * 10, 1.0) if is_met else 0.0
+        explanation = f"价格 {latest_close:.2f} {'>' if is_met else '<='} 均线+阈值 {threshold:.2f}"
+        return is_met, confidence, explanation
+
+class VolumeIncreaseRule(Rule):
+    """规则：成交量增加"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        vol_change = (recent['volume'].iloc[-1] - recent['volume'].iloc[0]) / recent['volume'].iloc[0]
+        is_met = vol_change > 0
+        confidence = min(vol_change * 10, 1.0) if is_met else 0.0
+        explanation = f"成交量变化率 {vol_change:.2%}"
+        return is_met, confidence, explanation
+
+class PositionTrendRule(Rule):
+    """规则：持仓量趋势上升"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        pos_change = (recent['position'].iloc[-1] - recent['position'].iloc[0]) / recent['position'].iloc[0]
+        is_met = pos_change > 0
+        confidence = min(pos_change * 10, 1.0) if is_met else 0.0
+        explanation = f"持仓量变化率 {pos_change:.2%}"
+        return is_met, confidence, explanation
+
+class VolatilityExpansionRule(Rule):
+    """规则：波动率扩展（ATR增加且价格上涨）"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        atr = (recent['high'] - recent['low']).mean()
+        prev_atr = features.iloc[-self.window-20:-self.window]['high'].mean() - features.iloc[-self.window-20:-self.window]['low'].mean()
+        price_up = recent['close'].iloc[-1] > recent['close'].iloc[0]
+        is_met = atr > prev_atr and price_up
+        confidence = min((atr - prev_atr) / prev_atr * 10, 1.0) if is_met else 0.0
+        explanation = f"ATR {atr:.2f} {'>' if is_met else '<='} 前期 {prev_atr:.2f}, 价格{'上涨' if price_up else '未上涨'}"
+        return is_met, confidence, explanation
+
+class UptrendRule(Rule):
+    """规则：上升趋势（5日均线 > 20日均线 > 50日均线）"""
+    def __init__(self, short_window: int = 5, mid_window: int = 20, long_window: int = 50):
+        self.short_window = short_window
+        self.mid_window = mid_window
+        self.long_window = long_window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        short_ma = features['close'].tail(self.short_window).mean()
+        mid_ma = features['close'].tail(self.mid_window).mean()
+        long_ma = features['close'].tail(self.long_window).mean()
+        is_met = short_ma > mid_ma > long_ma
+        confidence = min((short_ma - mid_ma) / mid_ma * 10, 1.0) if is_met else 0.0
+        explanation = f"5日均线 {short_ma:.2f}, 20日均线 {mid_ma:.2f}, 50日均线 {long_ma:.2f}"
+        return is_met, confidence, explanation
+
+class RSIAbove50Rule(Rule):
+    """规则：RSI > 50（动态阈值）"""
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        rsi = features['rsi'].iloc[-1]
+        volatility = features['market_volatility'].iloc[-1] if 'market_volatility' in features else 0.01
+        threshold = 50 - 10 * volatility
+        is_met = rsi > threshold
+        confidence = min((rsi - threshold) / (100 - threshold), 1.0) if is_met else 0.0
+        explanation = f"RSI: {rsi:.2f} {'>' if is_met else '<='} 动态阈值 {threshold:.2f}"
+        return is_met, confidence, explanation
+
+class MACDPositiveAndAboveSignalRule(Rule):
+    """规则：MACD > 0 且 MACD > 信号线"""
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        macd = features['macd'].iloc[-1]
+        signal = features['macd_signal'].iloc[-1]
+        is_met = macd > 0 and macd > signal
+        confidence = min((macd - signal) / abs(signal) * 10, 1.0) if is_met else 0.0
+        explanation = f"MACD: {macd:.2f}, 信号线: {signal:.2f}"
+        return is_met, confidence, explanation
+
+class PriceAboveBollingerUpperRule(Rule):
+    """规则：价格 > 上轨布林带"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        upper_band = recent['bollinger_upper'].iloc[-1]
+        latest_close = recent['close'].iloc[-1]
+        is_met = latest_close > upper_band
+        confidence = min((latest_close - upper_band) / upper_band * 10, 1.0) if is_met else 0.0
+        explanation = f"价格 {latest_close:.2f} {'>' if is_met else '<='} 上轨 {upper_band:.2f}"
+        return is_met, confidence, explanation
+
+class TrendReversalRule(Rule):
+    """规则：价格跌破20日均线且RSI<30"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        ma = recent['close'].mean()
+        latest_close = recent['close'].iloc[-1]
+        rsi = features['rsi'].iloc[-1]
+        is_met = latest_close < ma and rsi < 30
+        confidence = min((ma - latest_close) / ma * 10 + (30 - rsi) / 30, 1.0) if is_met else 0.0
+        explanation = f"价格 {latest_close:.2f} {'<' if is_met else '>='} 均线 {ma:.2f}, RSI: {rsi:.2f} {'<' if rsi < 30 else '>='} 30"
+        return is_met, confidence, explanation
+
+class VolumeSpikeRule(Rule):
+    """规则：成交量超过20日均量的2倍"""
+    def __init__(self, window: int = 20, threshold: float = 2.0):
+        self.window = window
+        self.threshold = threshold
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window)
+        avg_volume = recent['volume'].mean()
+        latest_volume = recent['volume'].iloc[-1]
+        is_met = latest_volume > avg_volume * self.threshold
+        confidence = min((latest_volume - avg_volume * self.threshold) / (avg_volume * self.threshold) * 10, 1.0) if is_met else 0.0
+        explanation = f"成交量 {latest_volume:.0f} {'>' if is_met else '<='} {self.threshold}x均量 {avg_volume * self.threshold:.0f}"
+        return is_met, confidence, explanation
+
+class PriceBreakoutHighRule(Rule):
+    """规则：价格突破前20日最高点"""
+    def __init__(self, window: int = 20):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window + 1)
+        prev_high = recent['high'].iloc[:-1].max()
+        latest_close = recent['close'].iloc[-1]
+        is_met = latest_close > prev_high
+        confidence = min((latest_close - prev_high) / prev_high * 10, 1.0) if is_met else 0.0
+        explanation = f"价格 {latest_close:.2f} {'>' if is_met else '<='} 前高 {prev_high:.2f}"
+        return is_met, confidence, explanation
+
+class MACDGoldenCrossRule(Rule):
+    """规则：MACD上穿信号线"""
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        macd = features['macd'].iloc[-1]
+        signal = features['macd_signal'].iloc[-1]
+        prev_macd = features['macd'].iloc[-2]
+        prev_signal = features['macd_signal'].iloc[-2]
+        is_met = macd > signal and prev_macd <= prev_signal
+        confidence = min((macd - signal) / abs(signal) * 10, 1.0) if is_met else 0.0
+        explanation = f"MACD {macd:.2f} 上穿信号线 {signal:.2f} (前值: {prev_macd:.2f}, {prev_signal:.2f})"
+        return is_met, confidence, explanation
+
+class VolatilityContractionRule(Rule):
+    """规则：波动率（ATR）连续5天缩小"""
+    def __init__(self, window: int = 5):
+        self.window = window
+
+    def evaluate(self, features: pd.DataFrame) -> Tuple[bool, float, str]:
+        recent = features.tail(self.window + 1)
+        atr = (recent['high'] - recent['low']).diff()
+        is_met = all(atr.iloc[-i] < atr.iloc[-i-1] for i in range(1, self.window + 1))
+        confidence = 1.0 if is_met else 0.0
+        explanation = f"ATR最近{self.window}天{'连续缩小' if is_met else '未连续缩小'}"
+        return is_met, confidence, explanation
+
+class MarketCondition(ABC):
+    """市场状态基类，用于动态调整权重"""
+    @abstractmethod
+    def evaluate(self, datasets: List[pd.DataFrame]) -> bool:
+        """判断是否满足市场条件"""
+        pass
+
+    @abstractmethod
+    def apply_adjustments(self, weights: Dict[str, float]) -> Dict[str, float]:
+        """应用权重调整"""
+        pass
+
+class HighVolatilityCondition(MarketCondition):
+    """高波动状态：ATR > 均值 + 标准差"""
+    def __init__(self, adjustments: Dict[str, float]):
+        self.adjustments = adjustments
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> bool:
+        market_atr = np.mean([df['high'].tail(20).mean() - df['low'].tail(20).mean() for df in datasets])
+        atr_mean = np.mean([df['high'].mean() - df['low'].mean() for df in datasets])
+        atr_std = np.std([df['high'].mean() - df['low'].mean() for df in datasets])
+        return market_atr > atr_mean + atr_std
+
+    def apply_adjustments(self, weights: Dict[str, float]) -> Dict[str, float]:
+        for rule, multiplier in self.adjustments.items():
+            if rule in weights:
+                weights[rule] = min(weights[rule] * multiplier, 2.0)
+        return weights
+
+class TrendMarketCondition(MarketCondition):
+    """趋势市场状态：ADX > 25"""
+    def __init__(self, adjustments: Dict[str, float]):
+        self.adjustments = adjustments
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> bool:
+        high = datasets[0]['high'].tail(14)
+        low = datasets[0]['low'].tail(14)
+        close = datasets[0]['close'].tail(14)
+        tr = pd.concat([high - low, abs(high - close.shift()), abs(low - close.shift())], axis=1).max(axis=1)
+        atr = tr.mean()
+        dm_plus = (high - high.shift()).where((high - high.shift()) > (low.shift() - low), 0)
+        dm_minus = (low.shift() - low).where((low.shift() - low) > (high - high.shift()), 0)
+        di_plus = 100 * dm_plus.rolling(14).mean() / atr
+        di_minus = 100 * dm_minus.rolling(14).mean() / atr
+        dx = 100 * abs(di_plus - di_minus) / (di_plus + di_minus)
+        adx = dx.rolling(14).mean().iloc[-1]
+        return adx > 25 if not np.isnan(adx) else False
+
+    def apply_adjustments(self, weights: Dict[str, float]) -> Dict[str, float]:
+        for rule, multiplier in self.adjustments.items():
+            if rule in weights:
+                weights[rule] = min(weights[rule] * multiplier, 2.0)
+        return weights
+
+class RangeMarketCondition(MarketCondition):
+    """震荡市场状态：ADX < 20"""
+    def __init__(self, adjustments: Dict[str, float]):
+        self.adjustments = adjustments
+
+    def evaluate(self, datasets: List[pd.DataFrame]) -> bool:
+        high = datasets[0]['high'].tail(14)
+        low = datasets[0]['low'].tail(14)
+        close = datasets[0]['close'].tail(14)
+        tr = pd.concat([high - low, abs(high - close.shift()), abs(low - close.shift())], axis=1).max(axis=1)
+        atr = tr.mean()
+        dm_plus = (high - high.shift()).where((high - high.shift()) > (low.shift() - low), 0)
+        dm_minus = (low.shift() - low).where((low.shift() - low) > (high - high.shift()), 0)
+        di_plus = 100 * dm_plus.rolling(14).mean() / atr
+        di_minus = 100 * dm_minus.rolling(14).mean() / atr
+        dx = 100 * abs(di_plus - di_minus) / (di_plus + di_minus)
+        adx = dx.rolling(14).mean().iloc[-1]
+        return adx < 20 if not np.isnan(adx) else False
+
+    def apply_adjustments(self, weights: Dict[str, float]) -> Dict[str, float]:
+        for rule, multiplier in self.adjustments.items():
+            if rule in weights:
+                weights[rule] = min(weights[rule] * multiplier, 1.8)
+        return weights
+
+class ExpertSystem:
+    """专家系统，整合规则、市场状态和推理引擎"""
+    def __init__(self, rules: List[Rule], rule_weights: Dict[str, float] = None):
+        """初始化专家系统
+        Args:
+            rules (List[Rule]): 规则列表
+            rule_weights (Dict[str, float]): 初始权重字典
+        """
+        self.rules = rules
+        self.base_weights = rule_weights or {rule.__class__.__name__: 1.0 for rule in rules}
+        self.rule_weights = self.base_weights.copy()
+        self.market_volatility = None
+        self.knowledge_base = {}
+
+    def adjust_weights(self, datasets: List[pd.DataFrame], conditions: List[MarketCondition]) -> Dict[str, float]:
+        """动态调整规则权重
+        Args:
+            datasets (List[pd.DataFrame]): 数据集列表
+            conditions (List[MarketCondition]): 市场状态类实例列表
+        Returns:
+            Dict[str, float]: 调整后的权重
+        """
+        self.rule_weights = self.base_weights.copy()
+        for condition in conditions:
+            if condition.evaluate(datasets):
+                condition.apply_adjustments(self.rule_weights)
+                logging.info(f"应用市场状态: {condition.__class__.__name__}")
+        logging.info(f"动态调整权重: {self.rule_weights}")
+        return self.rule_weights
+
+    def extract_facts(self, features: pd.DataFrame, contract: str) -> Dict[str, Tuple[bool, float, str]]:
+        """从特征数据中提取事实，存入知识库
+        Args:
+            features (pd.DataFrame): 单个合约的特征数据
+            contract (str): 合约标识（如 'contract1'）
+        Returns:
+            Dict[str, Tuple[bool, float, str]]: 规则名到事实的映射
+        """
+        if 'market_volatility' not in features.columns:
+            features['market_volatility'] = self.market_volatility
+        facts = {}
+        for rule in self.rules:
+            rule_name = rule.__class__.__name__
+            is_met, confidence, explanation = rule.evaluate(features)
+            facts[rule_name] = (is_met, confidence, explanation)
+            logging.debug(f"{contract} - {rule_name}: {explanation}, 置信度: {confidence:.2f}")
+        self.knowledge_base[contract] = facts
+        return facts
+
+    def evaluate_dependencies(self, rule_name: str, facts: Dict, dependencies: Dict) -> Tuple[bool, float]:
+        """递归评估规则的依赖关系，返回是否满足及增强倍数
+        Args:
+            rule_name (str): 当前规则名称
+            facts (Dict): 所有规则的事实字典
+            dependencies (Dict): 依赖关系配置
+        Returns:
+            Tuple[bool, float]: (依赖是否满足, 增强倍数)
+        """
+        if rule_name not in dependencies:
+            return True, 1.0
+        dep_config = dependencies[rule_name]
+        requires = dep_config.get("requires", [])
+        logic = dep_config.get("logic", "and")
+        boost = dep_config.get("boost", 1.0)
+
+        dep_results = []
+        for req in requires:
+            if isinstance(req, str):
+                is_met, _, _ = facts.get(req, (False, 0.0, ""))
+                dep_results.append(is_met)
+            else:
+                sub_rule = req["rule"]
+                sub_met, sub_boost = self.evaluate_dependencies(sub_rule, facts, dependencies)
+                dep_results.append(sub_met)
+                boost *= sub_boost if sub_met else 1.0
+
+        if logic == "and":
+            condition_met = all(dep_results)
+        elif logic == "or":
+            condition_met = any(dep_results)
+        elif logic == "not":
+            condition_met = not all(dep_results)
+        else:
+            condition_met = True
+        return condition_met, boost if condition_met else 1.0
+
+    def infer_strength(self, facts: Dict[str, Tuple[bool, float, str]], dependencies: Dict[str, Dict] = None) -> Tuple[float, str]:
+        """推理强弱得分，支持独立和依赖模式
+        Args:
+            facts (Dict): 规则事实字典
+            dependencies (Dict): 依赖关系配置
+        Returns:
+            Tuple[float, str]: (得分, 推理过程说明)
+        """
+        strength_score = 0.0
+        total_weight = sum(self.rule_weights.values())
+        explanation = "推理过程：\n"
+        dependencies = dependencies or {}
+
+        for rule_name, (is_met, confidence, rule_explanation) in facts.items():
+            weight = self.rule_weights.get(rule_name, 1.0)
+            dep_met, boost = self.evaluate_dependencies(rule_name, facts, dependencies)
+            dep_explanation = f" (依赖满足，增益 {boost:.2f}x)" if boost != 1.0 and is_met and dep_met else ""
+
+            if is_met and dep_met:
+                adjusted_contribution = confidence * weight * boost
+            else:
+                adjusted_contribution = 0.0
+
+            explanation += f"- {rule_name}: {rule_explanation}, 权重: {weight}, 贡献: {adjusted_contribution:.2f}{dep_explanation}\n"
+            strength_score += adjusted_contribution
+
+        final_score = strength_score / total_weight if total_weight > 0 else 0.0
+        explanation += f"最终得分: {final_score:.2f}"
+        return final_score, explanation
+
+    def evaluate(self, feature_datasets: List[pd.DataFrame], condition_map: Dict[str, type], config_path: str = "rules_config.json") -> Dict[str, Tuple[float, str]]:
+        """评估所有合约的强弱
+        Args:
+            feature_datasets (List[pd.DataFrame]): 特征数据集列表
+            condition_map (Dict[str, type]): 市场状态类映射，从外部传入
+            config_path (str): 配置文件路径
+        Returns:
+            Dict[str, Tuple[float, str]]: 合约到得分和解释的映射
+        """
+        with open(config_path, "r") as f:
+            rules_config = json.load(f)
+        conditions = [condition_map[cond["type"]](cond["adjustments"]) for cond in rules_config.get("market_conditions", [])]
+        dependencies = rules_config.get("dependencies", {})
+        
+        if rules_config.get("auto_weights", False):
+            from ..weight_generator import WeightGenerator  # 动态导入，避免循环依赖
+            generator = WeightGenerator()
+            self.base_weights = generator.generate("rules", feature_datasets, self.rules)
+            self.rule_weights = self.base_weights.copy()
+            generator.update_config("rules", self.base_weights, config_path)
+        else:
+            self.base_weights = rules_config.get("weights", {rule.__class__.__name__: 1.0 for rule in self.rules})
+            self.rule_weights = self.base_weights.copy()
+
+        self.rule_weights = self.adjust_weights(feature_datasets, conditions)
+        market_atr = np.mean([df['high'].tail(20).mean() - df['low'].tail(20).mean() for df in feature_datasets])
+        self.market_volatility = market_atr / feature_datasets[0]['close'].mean()
+        results = {}
+        for i, features in enumerate(feature_datasets):
+            contract = f"contract{i+1}"
+            facts = self.extract_facts(features, contract)
+            score, explanation = self.infer_strength(facts, dependencies)
+            results[contract] = (score, explanation)
+            logging.info(f"{contract} 强弱评估完成，得分: {score:.2f}\n{explanation}")
+        return results
+28：/src/rules/main_rules.py下面的内容是：
+# src/rules/main_rules.py
+import json
+import os
+import pandas as pd
+import logging
+from ..logging_utils import setup_logging
+from ..data_processor import DataProcessor
+from ..features.extractor import FeatureExtractor
+from ..features.features import (
+    PriceFeature, VolumeFeature, SpreadFeature, PositionFeature, AmountFeature,
+    RSI, MACDLine, MACDSignal, BollingerBandsUpper, BollingerBandsLower
+)
+from .evaluator import (
+    ExpertSystem, BreakoutMARule, VolumeIncreaseRule, PositionTrendRule, VolatilityExpansionRule,
+    UptrendRule, RSIAbove50Rule, MACDPositiveAndAboveSignalRule, PriceAboveBollingerUpperRule,
+    TrendReversalRule, VolumeSpikeRule, PriceBreakoutHighRule, MACDGoldenCrossRule, VolatilityContractionRule,
+    HighVolatilityCondition, TrendMarketCondition, RangeMarketCondition
+)
+from ..recommender import ScoringTradeRecommender
+
+def get_feature_objects() -> List:
+    """定义特征提取对象列表"""
+    return [
+        PriceFeature("close"), VolumeFeature(), SpreadFeature(), PositionFeature(), AmountFeature(),
+        RSI(), MACDLine(), MACDSignal(), BollingerBandsUpper(), BollingerBandsLower()
+    ]
+
+def main_rules(global_config_path="../config.json", rules_config_path="rules_config.json"):
+    """运行规则模块的主函数
+    Args:
+        global_config_path (str): 全局配置文件路径
+        rules_config_path (str): 规则配置文件路径
+    """
+    setup_logging(log_file_path="../../results/rules_log.log", level=logging.INFO)
+    logging.info("开始运行 Rules-Based Expert System 方法")
+
+    with open(global_config_path, "r") as f:
+        global_config = json.load(f)
+    with open(rules_config_path, "r") as f:
+        rules_config = json.load(f)
+
+    if "data_groups" not in global_config:
+        raise ValueError("全局配置缺少 'data_groups'")
+    if "rules" not in rules_config:
+        raise ValueError("规则配置缺少 'rules'")
+
+    os.makedirs("../../results", exist_ok=True)
+
+    rule_map = {
+        "BreakoutMARule": BreakoutMARule,
+        "VolumeIncreaseRule": VolumeIncreaseRule,
+        "PositionTrendRule": PositionTrendRule,
+        "VolatilityExpansionRule": VolatilityExpansionRule,
+        "UptrendRule": UptrendRule,
+        "RSIAbove50Rule": RSIAbove50Rule,
+        "MACDPositiveAndAboveSignalRule": MACDPositiveAndAboveSignalRule,
+        "PriceAboveBollingerUpperRule": PriceAboveBollingerUpperRule,
+        "TrendReversalRule": TrendReversalRule,
+        "VolumeSpikeRule": VolumeSpikeRule,
+        "PriceBreakoutHighRule": PriceBreakoutHighRule,
+        "MACDGoldenCrossRule": MACDGoldenCrossRule,
+        "VolatilityContractionRule": VolatilityContractionRule
+    }
+
+    condition_map = {
+        "HighVolatilityCondition": HighVolatilityCondition,
+        "TrendMarketCondition": TrendMarketCondition,
+        "RangeMarketCondition": RangeMarketCondition
+    }
+
+    for group_idx, data_files in enumerate(global_config["data_groups"]):
+        logging.info(f"处理第 {group_idx + 1} 组数据: {data_files}")
+        processors = [DataProcessor(f"../../data/{path}") for path in data_files]
+        datasets = [p.clean_data() for p in processors]
+        symbols = [path.split('.')[0] for path in data_files]
+        
+        for i, data in enumerate(datasets):
+            data.set_index('date', inplace=True)
+        common_index = datasets[0].index
+        for data in datasets[1:]:
+            common_index = common_index.intersection(data.index)
+        datasets = [data.loc[common_index].reset_index() for data in datasets]
+        logging.info("数据加载完成，时间对齐至重叠期")
+
+        feature_extractor = FeatureExtractor(get_feature_objects())
+        feature_datasets = [feature_extractor.extract_features([data], None) for data in datasets]
+        logging.info("特征提取完成")
+
+        selected_rules = []
+        for rule_name, params in rules_config["rules"].items():
+            if rule_name in rule_map:
+                selected_rules.append(rule_map[rule_name](**params))
+            else:
+                logging.warning(f"未知规则: {rule_name}")
+        rule_weights = rules_config.get("weights", {rule.__class__.__name__: 1.0 for rule in selected_rules})
+
+        expert_system = ExpertSystem(selected_rules, rule_weights)
+        results_with_explanations = expert_system.evaluate(feature_datasets, condition_map, rules_config_path)
+        
+        results = {contract: score for contract, (score, _) in results_with_explanations.items()}
+        logging.info("专家系统评估完成")
+
+        print("专家系统强弱结果:")
+        for contract, (score, explanation) in results_with_explanations.items():
+            symbol = symbols[int(contract[-1]) - 1]
+            print(f"{symbol:<15} 得分: {score:.2f}")
+            print(explanation)
+            print("-" * 50)
+
+        recommender = ScoringTradeRecommender(global_config["market_direction"])
+        advice = recommender.recommend(results, "rules", symbols, group_idx, datasets)
+        print(f"交易建议: {advice}")
+        logging.info(f"交易建议生成: {advice}")
+
+    logging.info("Rules-Based Expert System 方法运行完成")
+
+if __name__ == "__main__":
+    main_rules()
+29：/src/rules/rules_config.json文件内容是这样的：
+{
+    "rules": {
+        "BreakoutMARule": {"window": 20, "volatility_factor": 0.01},
+        "VolumeIncreaseRule": {"window": 20},
+        "PositionTrendRule": {"window": 20},
+        "VolatilityExpansionRule": {"window": 20},
+        "UptrendRule": {"short_window": 5, "mid_window": 20, "long_window": 50},
+        "RSIAbove50Rule": {},
+        "MACDPositiveAndAboveSignalRule": {},
+        "PriceAboveBollingerUpperRule": {"window": 20},
+        "TrendReversalRule": {"window": 20},
+        "VolumeSpikeRule": {"window": 20, "threshold": 2.0},
+        "PriceBreakoutHighRule": {"window": 20},
+        "MACDGoldenCrossRule": {},
+        "VolatilityContractionRule": {"window": 5}
+    },
+    "weights": {
+        "BreakoutMARule": 1.0,
+        "VolumeIncreaseRule": 0.8,
+        "PositionTrendRule": 0.7,
+        "VolatilityExpansionRule": 0.6,
+        "UptrendRule": 1.5,
+        "RSIAbove50Rule": 1.2,
+        "MACDPositiveAndAboveSignalRule": 1.5,
+        "PriceAboveBollingerUpperRule": 1.0,
+        "TrendReversalRule": 1.2,
+        "VolumeSpikeRule": 0.9,
+        "PriceBreakoutHighRule": 1.0,
+        "MACDGoldenCrossRule": 1.3,
+        "VolatilityContractionRule": 0.8
+    },
+    "auto_weights": false,
+    "market_conditions": [
+        {
+            "type": "HighVolatilityCondition",
+            "adjustments": {
+                "VolatilityExpansionRule": 1.5,
+                "PriceAboveBollingerUpperRule": 1.5,
+                "VolatilityContractionRule": 1.2
+            }
+        },
+        {
+            "type": "TrendMarketCondition",
+            "adjustments": {
+                "UptrendRule": 1.3,
+                "MACDPositiveAndAboveSignalRule": 1.3,
+                "PriceBreakoutHighRule": 1.3,
+                "MACDGoldenCrossRule": 1.3
+            }
+        },
+        {
+            "type": "RangeMarketCondition",
+            "adjustments": {
+                "RSIAbove50Rule": 1.2,
+                "TrendReversalRule": 1.2,
+                "VolumeSpikeRule": 1.2
+            }
+        }
+    ],
+    "dependencies": {
+        "BreakoutMARule": {
+            "requires": ["VolumeIncreaseRule", "PositionTrendRule"],
+            "logic": "or",
+            "boost": 1.5
+        },
+        "UptrendRule": {
+            "requires": [
+                {"rule": "MACDPositiveAndAboveSignalRule", "requires": ["RSIAbove50Rule"], "logic": "and"}
+            ],
+            "logic": "and",
+            "boost": 1.3
+        },
+        "RSIAbove50Rule": {
+            "requires": ["TrendReversalRule"],
+            "logic": "not",
+            "boost": 0.5
+        }
+    }
+}
+30：/src/weight_generator/__init__.py的内容是：
+# src/weight_generator/__init__.py
+from .generate_weights import WeightGenerator, RulesWeightAdjuster, ScoringWeightAdjuster, MLWeightAdjuster
+31:/src/weight_generator/generate_weights.py下面的内容是：
+# src/weight_generator/generate_weights.py
+from abc import ABC, abstractmethod
+from typing import List, Dict
+import pandas as pd
+import numpy as np
+import json
+from sklearn.ensemble import RandomForestClassifier
+
+class WeightAdjuster(ABC):
+    """权重调整基类"""
+    @abstractmethod
+    def adjust_weights(self, datasets: List[pd.DataFrame], components: List, target: str) -> Dict[str, float]:
+        """根据数据和组件调整权重
+        Args:
+            datasets: 历史数据列表
+            components: 规则、分析类或特征列表
+            target: 强弱标签列名
+        Returns:
+            Dict[str, float]: 组件名到权重的映射
+        """
+        pass
+
+class RulesWeightAdjuster(WeightAdjuster):
+    """规则模块权重调整器"""
+    def adjust_weights(self, datasets: List[pd.DataFrame], rules: List, target: str) -> Dict[str, float]:
+        """基于规则预测准确率调整权重"""
+        weights = {}
+        for rule in rules:
+            facts = [rule.evaluate(df) for df in datasets]
+            preds = [f[0] for f in facts]
+            actual = [df[target].iloc[-1] > 0 for df in datasets]
+            accuracy = sum(p == a for p, a in zip(preds, actual)) / len(preds)
+            weights[rule.__class__.__name__] = accuracy * 2  # 映射到 0-2
+        return weights
+
+class ScoringWeightAdjuster(WeightAdjuster):
+    """打分模块权重调整器"""
+    def adjust_weights(self, datasets: List[pd.DataFrame], analyses: List, target: str) -> Dict[str, float]:
+        """基于分析类得分与强弱的相关性调整权重"""
+        weights = {}
+        for analysis in analyses:
+            scores = [analysis.evaluate(df) for df in datasets]
+            corr = np.corrcoef(scores, [df[target].iloc[-1] for df in datasets])[0, 1]
+            weights[analysis.__class__.__name__] = max(corr, 0) * 2
+        return weights
+
+class MLWeightAdjuster(WeightAdjuster):
+    """机器学习模块权重调整器"""
+    def adjust_weights(self, datasets: List[pd.DataFrame], features: List[str], target: str) -> Dict[str, float]:
+        """基于随机森林特征重要性调整权重"""
+        X = pd.concat([df[features] for df in datasets], axis=0)
+        y = [1 if df[target].iloc[-1] > 0 else 0 for df in datasets]
+        model = RandomForestClassifier(random_state=42).fit(X, y)
+        return dict(zip(features, model.feature_importances_ * 2))
+
+class WeightGenerator:
+    """权重生成工具"""
+    def __init__(self):
+        """初始化调整器映射"""
+        self.adjusters = {
+            "rules": RulesWeightAdjuster(),
+            "scoring": ScoringWeightAdjuster(),
+            "ml": MLWeightAdjuster()
+        }
+
+    def generate(self, module_type: str, datasets: List[pd.DataFrame], components: List, target: str = "label") -> Dict[str, float]:
+        """生成指定模块的权重
+        Args:
+            module_type: 模块类型 ('rules', 'scoring', 'ml')
+            datasets: 历史数据列表
+            components: 规则、分析类或特征列表
+            target: 强弱标签列名
+        Returns:
+            Dict[str, float]: 权重字典
+        """
+        adjuster = self.adjusters.get(module_type)
+        if not adjuster:
+            raise ValueError(f"未知模块类型: {module_type}")
+        return adjuster.adjust_weights(datasets, components, target)
+
+    def update_config(self, module_type: str, weights: Dict[str, float], config_path: str):
+        """更新配置文件中的权重
+        Args:
+            module_type: 模块类型
+            weights: 生成的权重字典
+            config_path: 配置文件路径
+        """
+        with open(config_path, "r") as f:
+            config = json.load(f)
+        config["weights"] = weights
+        config["auto_weights"] = True
+        with open(config_path, "w") as f:
+            json.dump(config, f, indent=4)
+            print(f"已更新 {config_path} 中的权重")
+
+# 示例使用
+if __name__ == "__main__":
+    from ..rules.evaluator import BreakoutMARule, VolumeIncreaseRule  # 示例规则
+    datasets = [pd.read_csv("../../data/rb2510.csv")]  # 示例数据
+    rules = [BreakoutMARule(), VolumeIncreaseRule()]
+    generator = WeightGenerator()
+    weights = generator.generate("rules", datasets, rules, target="close")
+    generator.update_config("rules", weights, "rules_config.json")
+32:
+
+
