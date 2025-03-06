@@ -1,0 +1,14 @@
+{
+    "python.defaultInterpreterPath": "C:\\Anaconda3\\envs\\AlphaGrid\\python.exe",
+    "python.analysis.extraPaths": [
+        "${workspaceFolder}/src"
+    ],
+    "code-runner.executorMap": {
+        "python": "C:\\Anaconda3\\envs\\AlphaGrid\\python.exe"
+    },
+    "code-runner.runInTerminal": true,
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true
+}

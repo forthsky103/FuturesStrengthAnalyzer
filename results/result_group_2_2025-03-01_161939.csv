@@ -1,0 +1,4 @@
+timestamp,group_id,symbol,score,is_strongest,is_weakest,market_direction
+2025-03-01 16:19:39,2,rb2510.csv,11.996495660835711,False,False,down
+2025-03-01 16:19:39,2,rb2505.csv,9.12756110453515,False,True,down
+2025-03-01 16:19:39,2,hc2505.csv,13.301040889080634,True,False,down

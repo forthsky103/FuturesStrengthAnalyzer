@@ -1,0 +1,4 @@
+timestamp,group_id,symbol,score,is_strongest,is_weakest,market_direction
+2025-03-01 22:01:15,1,rb2510,0.2401733111240904,True,False,up
+2025-03-01 22:01:15,1,rb2505,0.16422550826488505,False,False,up
+2025-03-01 22:01:15,1,hc2505,0.11733031359559398,False,True,up

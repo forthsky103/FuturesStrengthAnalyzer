@@ -1,0 +1,16 @@
+# 核心依赖
+pandas>=2.0.0        # 数据处理和分析
+numpy>=1.24.0        # 数值计算
+pyyaml>=6.0          # YAML 文件解析
+
+# 机器学习和评估
+scikit-learn>=1.3.0  # ML 模型和评估指标
+
+# 可选 ML 模型（根据需要取消注释）
+# xgboost>=2.0.0      # XGBoost 模型
+# lightgbm>=4.0.0     # LightGBM 模型
+# catboost>=1.2.0     # CatBoost 模型
+
+# 可选扩展（根据需要取消注释）
+# statsmodels>=0.14.0 # 统计模型扩展
+# matplotlib>=3.7.0   # 数据可视化

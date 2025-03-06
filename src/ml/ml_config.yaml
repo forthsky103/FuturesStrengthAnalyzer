@@ -1,0 +1,173 @@
+# src/ml/ml_config.yaml
+
+# 数据目录配置
+data_dir: "data"
+# - 描述: 指定数据文件所在的目录，所有数据组的文件将从此路径加载
+# - 默认值: "data"，表示项目根目录下的 FuturesStrengthAnalyzer/data/
+# - 示例: 可改为 "input/data" 或绝对路径 "D:/mydata/"
+
+# 日志目录配置
+log_dir: "results"
+# - 描述: 指定日志文件存放的目录，例如 ml_log.log
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "logs" 或绝对路径 "D:/logs/"
+
+# 结果保存目录配置
+results_dir: "results"
+# - 描述: 指定交易建议结果 CSV 文件保存的目录，例如 result_group_*.csv
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "output" 或绝对路径 "D:/output/"
+
+# 数据组配置
+data_groups:
+  - files:
+      - "rb2510.csv"
+      - "rb2505.csv"
+      - "hc2505.csv"
+    market_direction: "up"
+    # - files: 列表，指定该组分析的合约数据文件名（无需包含路径，由 data_dir 指定）
+    #   - 示例: ["rb2510.csv"] 表示分析螺纹钢 2510 合约
+    # - market_direction: 字符串，指定市场方向，影响交易建议
+    #   - 可选值: "up"（看涨，建议做多最强、做空最弱），"down"（看跌，反之），其他（如 "neutral" 表示震荡）
+    #   - 示例: "up" 表示看涨市场
+  # - files:
+  #     - "hc2510.csv"
+  #     - "rb2510.csv"
+  #     - "hc2505.csv"
+  #   market_direction: "down"
+    # - 注释同上，表示第二组数据，按看跌方向分析
+
+# 是否启用自动特征选择
+enable_feature_selection: false
+# - 描述: 是否启用自动特征选择（由 MLFeatureSelector 基于相关性筛选特征）
+# - 默认值: 无（建议明确指定）
+# - 可选值:
+#   - true: 自动选择 feature_count 个特征
+#   - false: 使用 manual_features
+# - 示例: false 表示使用手动指定特征
+
+# 手动选择的特征列表
+manual_features:
+  - "PriceMomentumFeature"   # 价格动量特征，衡量价格趋势强度
+  - "VolumePressureFeature"  # 成交量压力特征，反映市场参与度
+  - "PriceVelocityFeature"   # 价格速度特征，衡量价格变化速率
+# - 描述: 手动指定的特征列表，当 enable_feature_selection 为 false 时生效
+# - 默认值: 空列表（若为空且 enable_feature_selection 为 false，则需要手动指定）
+# - 可选值: features.py 中定义的特征类名
+
+# 特征参数配置
+feature_params:
+  PriceMomentumFeature: {window: 20}
+  VolumePressureFeature: {window: 20}
+  PriceVelocityFeature: {window: 10}
+# - 描述: 定义每个特征的计算参数，如窗口大小
+# - 默认值: 若未指定，使用特征类中的默认值（如 window=20）
+# - 示例: PriceMomentumFeature 的 window 设置为 20 天
+
+# 权重配置（可选，用于特征重要性评估）
+weights:
+  PriceMomentumFeature: 1.0
+  VolumePressureFeature: 1.0
+  PriceVelocityFeature: 1.0
+# - 描述: 指定每个特征的初始权重，若启用 auto_weights，则会被动态权重覆盖
+# - 默认值: 未指定时为 1.0
+
+# 是否自动生成特征权重
+auto_weights: false
+# - 描述: 是否使用 WeightGenerator 动态生成特征权重
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 根据特征与标签的相关性生成权重
+#   - false: 使用 weights 中指定的静态权重
+# - 示例: false 表示使用静态权重
+
+# 是否更新配置文件
+update_config: true
+# - 描述: 动态生成权重后，是否将结果更新到此配置文件
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 更新配置文件（根据 update_weights_only 决定范围）
+#   - false: 不更新，仅在内存中使用动态权重
+# - 示例: true 表示写入配置文件
+
+# 是否仅更新权重部分
+update_weights_only: true
+# - 描述: 更新配置文件时，是否仅修改 weights 部分，保持其他配置不变
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 仅更新 weights，保留其他配置（如 feature_params）
+#   - false: 覆盖整个配置文件（可能丢失其他配置）
+# - 示例: true 表示仅更新 weights
+
+# 标签生成器类型
+labeler_type: "ReturnBasedLabeler"
+# - 描述: 指定用于生成强弱标签的生成器类型
+# - 默认值: "ReturnBasedLabeler"（基于收益率）
+# - 可选值: labelers.py 中定义的类名，如 "VolumeBasedLabeler"
+# - 示例: "ReturnBasedLabeler" 表示根据收益率判断强弱
+
+# 标签生成窗口
+labeler_window: 20
+# - 描述: 标签生成器的计算窗口大小（单位：天）
+# - 默认值: 20
+# - 可选值: 正整数，通常与数据长度相关
+# - 示例: 20 表示基于过去 20 天的收益率生成标签
+
+# 模型类型
+model_type: "random_forest"
+# - 描述: 指定使用的 ML 模型类型
+# - 默认值: 无（建议指定）
+# - 可选值: random_forest, xgboost, gradient_boosting, lightgbm, catboost, logistic_regression, svm, adaboost, extra_trees, knn, stacking
+# - 示例: "stacking" 表示使用堆叠模型
+
+# 基准模型（仅当 model_type 为 stacking 时生效）
+base_model: "xgboost"
+# - 描述: 指定堆叠模型的基准模型（一级模型中最重要的模型）
+# - 默认值: 若未指定，默认为 "random_forest"
+# - 可选值: random_forest, xgboost, gradient_boosting, lightgbm, catboost, svm, adaboost, extra_trees, knn
+# - 示例: "xgboost" 表示以 XGBoost 作为基准模型
+
+# 全局模型参数（适用于所有模型，若被 stacking_params 覆盖则以后者为准）
+model_params:
+  n_estimators: 100
+  random_state: 42
+# - 描述: 通用的模型超参数，若未指定特定参数，则使用这些值
+# - 示例: n_estimators=100 表示树模型的树数量为 100
+
+# 堆叠模型高级配置（仅当 model_type 为 stacking 时生效）
+stacking_params:
+  base_model_params: {n_estimators: 200}
+  # - 描述: 基准模型的特定参数，覆盖 model_params 中的值
+  # - 示例: n_estimators=200 表示 XGBoost 使用 200 棵树
+  other_models: ["random_forest", "lightgbm"]
+  # - 描述: 次级模型列表，指定除基准模型外的其他模型
+  # - 默认值: 若未指定，使用除 base_model 外的所有可用模型
+  # - 可选值: random_forest, xgboost, gradient_boosting, lightgbm, catboost, svm, adaboost, extra_trees, knn
+  # - 示例: ["random_forest", "lightgbm"] 表示仅使用这两个模型作为次级模型
+  other_model_params: {n_estimators: 50}
+  # - 描述: 次级模型的通用参数，覆盖 model_params 中的值
+  # - 示例: n_estimators=50 表示次级模型使用 50 棵树
+  meta_model_params: {max_iter: 2000}
+  # - 描述: 元模型（二级模型，通常为 LogisticRegression）的参数
+  # - 示例: max_iter=2000 表示逻辑回归最大迭代次数为 2000
+
+# 推荐模式
+recommend_mode: "probability"
+# - 描述: 生成交易建议的模式
+# - 默认值: "probability"（基于概率值）
+# - 可选值: 当前仅支持 probability，后续可扩展
+# - 示例: "probability" 表示根据预测概率选择最强和最弱合约
+
+# AUC 阈值
+auc_threshold: 0.7
+# - 描述: 用于评估模型性能的 AUC 阈值，若低于此值，可能影响强弱判断
+# - 默认值: 0.7
+# - 可选值: 0.0 到 1.0 之间的浮点数
+# - 示例: 0.7 表示 AUC 低于 0.7 时，可能标记为 neutral
+
+# 概率和 AUC 的权重
+prob_weight: 0.8
+auc_weight: 0.2
+# - 描述: 用于综合评分的权重，prob_weight + auc_weight = 1.0
+# - 默认值: prob_weight=0.8, auc_weight=0.2
+# - 示例: 表示概率占 80% 权重，AUC 占 20% 权重

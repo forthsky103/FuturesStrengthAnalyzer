@@ -1,0 +1,45 @@
+2025-03-01 16:18:32,078 - INFO - 日志配置完成
+2025-03-01 16:18:32,080 - INFO - 处理数据组 1，市场方向: up
+2025-03-01 16:18:32,115 - INFO - 数据组 1 加载的数据集数量: 3
+2025-03-01 16:18:32,130 - INFO - 标签数量: 3
+2025-03-01 16:18:32,269 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:18:32,278 - INFO - 数据组 1 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:18:32,379 - INFO - 数据组 1 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:18:32,388 - INFO - 数据组 1 交易建议: 做多 hc2505.csv（得分: 13.3010），做空 rb2505.csv（得分: 9.1276）
+2025-03-01 16:18:32,389 - INFO - 处理数据组 2，市场方向: down
+2025-03-01 16:18:32,424 - INFO - 数据组 2 加载的数据集数量: 3
+2025-03-01 16:18:32,436 - INFO - 标签数量: 3
+2025-03-01 16:18:32,580 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:18:32,591 - INFO - 数据组 2 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:18:32,650 - INFO - 数据组 2 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:18:32,657 - INFO - 数据组 2 交易建议: 做空 rb2505.csv（得分: 9.1276），做多 hc2505.csv（得分: 13.3010）
+2025-03-01 16:18:59,552 - INFO - 日志配置完成
+2025-03-01 16:18:59,553 - INFO - 处理数据组 1，市场方向: up
+2025-03-01 16:18:59,587 - INFO - 数据组 1 加载的数据集数量: 3
+2025-03-01 16:18:59,615 - INFO - 标签数量: 3
+2025-03-01 16:18:59,756 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:18:59,769 - INFO - 数据组 1 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:18:59,818 - INFO - 数据组 1 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:18:59,827 - INFO - 数据组 1 交易建议: 做多 hc2505.csv（得分: 13.3010），做空 rb2505.csv（得分: 9.1276）
+2025-03-01 16:18:59,829 - INFO - 处理数据组 2，市场方向: down
+2025-03-01 16:18:59,855 - INFO - 数据组 2 加载的数据集数量: 3
+2025-03-01 16:18:59,868 - INFO - 标签数量: 3
+2025-03-01 16:19:00,006 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:19:00,017 - INFO - 数据组 2 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:19:00,106 - INFO - 数据组 2 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:19:00,115 - INFO - 数据组 2 交易建议: 做空 rb2505.csv（得分: 9.1276），做多 hc2505.csv（得分: 13.3010）
+2025-03-01 16:19:38,982 - INFO - 日志配置完成
+2025-03-01 16:19:38,983 - INFO - 处理数据组 1，市场方向: up
+2025-03-01 16:19:39,035 - INFO - 数据组 1 加载的数据集数量: 3
+2025-03-01 16:19:39,052 - INFO - 标签数量: 3
+2025-03-01 16:19:39,181 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:19:39,191 - INFO - 数据组 1 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:19:39,236 - INFO - 数据组 1 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:19:39,243 - INFO - 数据组 1 交易建议: 做多 hc2505.csv（得分: 13.3010），做空 rb2505.csv（得分: 9.1276）
+2025-03-01 16:19:39,244 - INFO - 处理数据组 2，市场方向: down
+2025-03-01 16:19:39,272 - INFO - 数据组 2 加载的数据集数量: 3
+2025-03-01 16:19:39,285 - INFO - 标签数量: 3
+2025-03-01 16:19:39,410 - INFO - feature_scores 形状: (3, 35)
+2025-03-01 16:19:39,418 - INFO - 数据组 2 选择的特征: ['IntradayMomentumShiftAnalysis', 'IntradayPriceEfficiencyAnalysis', 'IntradayPriceRangeDistributionAnalysis', 'MarketParticipationBalanceAnalysis', 'PriceBounceStrengthAnalysis', 'PriceClusterAnalysis', 'PriceMomentumDivergenceAnalysis', 'PricePressureAnalysis', 'PricePullbackStrengthAnalysis', 'PriceStructureDensityAnalysis']
+2025-03-01 16:19:39,541 - INFO - 数据组 2 评分结果: {'contract1': 11.996495660835711, 'contract2': 9.12756110453515, 'contract3': 13.301040889080634}
+2025-03-01 16:19:39,615 - INFO - 数据组 2 交易建议: 做空 rb2505.csv（得分: 9.1276），做多 hc2505.csv（得分: 13.3010）

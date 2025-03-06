@@ -1,0 +1,156 @@
+# src/stats/stats_config.yaml
+# 这个是stats算法的详细备注，放置配置文件更改。
+# 数据目录配置
+data_dir: "data"
+# - 描述: 指定数据文件所在的目录，所有数据组的文件将从此路径加载
+# - 默认值: "data"，表示项目根目录下的 FuturesStrengthAnalyzer/data/
+# - 示例: 可改为 "input/data" 或绝对路径 "D:/mydata/"
+
+# 日志目录配置
+log_dir: "results"
+# - 描述: 指定日志文件存放的目录，例如 stats_log.log
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "logs" 或绝对路径 "D:/logs/"
+
+# 结果保存目录配置
+results_dir: "results"
+# - 描述: 指定交易建议结果 CSV 文件保存的目录，例如 result_group_*.csv
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "output" 或绝对路径 "D:/output/"
+
+# 数据组配置
+data_groups:
+  - files:
+      - "rb2510.csv"
+      - "rb2505.csv"
+      - "hc2505.csv"
+    market_direction: "up"
+    # - files: 列表，指定该组分析的合约数据文件名（无需包含路径，由 data_dir 指定）
+    #   - 示例: ["rb2510.csv"] 表示分析螺纹钢 2510 合约
+    # - market_direction: 字符串，指定市场方向，影响交易建议
+    #   - 可选值: "up"（看涨，建议做多最强、做空最弱），"down"（看跌，反之），其他（如 "neutral" 表示震荡）
+    #   - 示例: "up" 表示看涨市场
+  - files:
+      - "rb2505.csv"
+      - "rb2510.csv"
+      - "hc2505.csv"
+    market_direction: "down"
+    # - 注释同上，表示第二组数据，按看跌方向分析
+
+# 特征选择配置
+enable_feature_selection: true
+# - 描述: 是否启用自动特征选择（由 StatsFeatureSelector 基于统计指标筛选）
+# - 默认值: 无（建议明确指定）
+# - 可选值:
+#   - true: 自动选择 feature_count 个指标
+#   - false: 使用 manual_features 或全部指标
+# - 示例: false 表示使用手动指定指标
+
+feature_count: 5
+# - 描述: 自动选择指标时，保留的指标数量（仅当 enable_feature_selection 为 true 时生效）
+# - 默认值: 无（建议指定）
+# - 可选值: 1 到指标总数（当前 7 个指标）
+# - 示例: 5 表示选择 5 个最重要的指标
+
+manual_features:
+  - "MeanReturn"
+  - "Volatility"
+  - "SharpeRatio"
+# - 描述: 手动指定的指标列表（仅当 enable_feature_selection 为 false 时生效）
+# - 默认值: 空列表（若为空且 enable_feature_selection 为 false，则使用所有指标）
+# - 可选值: evaluator.py 中定义的指标类名，如 "MeanReturn"
+# - 示例: 当前选择 3 个核心指标
+
+# 统计指标及其参数配置（可选，当前指标无参数）
+metrics:
+  MeanReturn: {}
+  Volatility: {}
+  SharpeRatio: {}
+  MaxDrawdown: {}
+  Skewness: {}
+  Kurtosis: {}
+  QuantileRange: {}
+# - 描述: 定义统计指标及其参数（若有），当前为空，仅占位
+# - 示例: 若需参数，可添加如 "MeanReturn: {window: 20}"
+
+# 指标初始权重配置
+weights:
+  MeanReturn: 1.5    # 平均收益率初始权重，强调收益表现
+  Volatility: 1.0    # 波动率初始权重，作为基准
+  SharpeRatio: 1.2   # 夏普比率初始权重，略高于平均
+  MaxDrawdown: 1.0   # 最大回撤初始权重，关注风险
+  Skewness: 0.8      # 偏度初始权重，次要指标
+  Kurtosis: 0.7      # 峰度初始权重，次要指标
+  QuantileRange: 0.9 # 分位数范围初始权重，关注分布宽度
+# - 描述: 指定每个指标的初始权重（auto_weights: false 时生效，或 update_config: false 时保留）
+# - 默认值: 未指定的指标权重为 1.0
+# - 可选值: 浮点数，通常在 0.0 到 2.0 之间
+# - 示例: "MeanReturn: 1.5" 表示收益权重更高
+
+# 是否自动生成权重
+auto_weights: true
+# - 描述: 是否使用 WeightGenerator 动态生成权重
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 根据指标与标签的相关性动态生成权重
+#   - false: 使用 weights 中指定的静态权重
+# - 示例: true 表示启用动态权重
+
+# 是否更新配置文件
+update_config: false
+# - 描述: 动态生成权重后，是否将结果更新到配置文件
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 更新配置文件（根据 update_weights_only 决定范围）
+#   - false: 不更新配置文件，仅在内存中使用动态权重
+# - 示例: true 表示将动态权重写入配置文件
+
+# 是否仅更新权重部分
+update_weights_only: true
+# - 描述: 更新配置文件时，是否仅修改 weights 部分，保持其他配置不变
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 仅更新 weights，保留其他配置（如 metrics, market_conditions）
+#   - false: 覆盖整个配置文件（可能导致其他配置丢失）
+# - 示例: true 表示只更新 weights 部分
+
+# 市场条件配置
+market_conditions:
+  - type: "HighVolatilityCondition"
+    adjustments:
+      Volatility: 1.5     # 高波动时提高波动率权重
+      MaxDrawdown: 1.5    # 高波动时提高最大回撤权重
+      QuantileRange: 1.2  # 高波动时略提高分位数范围权重
+    # - type: 市场状态类型，需与 market_conditions.py 中的类名匹配
+    # - adjustments: 当条件满足时，调整指定指标的权重（乘法因子）
+    #   - 示例: Volatility: 1.5 表示高波动时权重增加 50%
+  - type: "TrendMarketCondition"
+    adjustments:
+      MeanReturn: 1.3     # 趋势市场提高收益率权重
+      SharpeRatio: 1.3    # 趋势市场提高夏普比率权重
+      Skewness: 1.2       # 趋势市场略提高偏度权重
+    # - 注释同上，适用于趋势市场
+  - type: "RangeMarketCondition"
+    adjustments:
+      Volatility: 1.2     # 震荡市场略提高波动率权重
+      Kurtosis: 1.2       # 震荡市场略提高峰度权重
+      QuantileRange: 1.2  # 震荡市场略提高分位数范围权重
+    # - 注释同上，适用于震荡市场
+  - type: "LowVolatilityCondition"
+    adjustments:
+      SharpeRatio: 1.2    # 低波动时略提高夏普比率权重
+      QuantileRange: 1.3  # 低波动时提高分位数范围权重
+    # - 注释同上，适用于低波动市场
+
+# 标签生成配置（用于自动特征选择和动态权重）
+labeler_type: "ReturnBasedLabeler"
+# - 描述: 指定标签生成器类型，用于自动选择指标和生成动态权重
+# - 默认值: "ReturnBasedLabeler"（基于收益率）
+# - 可选值: labelers.py 中定义的类名，如 "VolumeBasedLabeler", "VolatilityBasedLabeler"
+# - 示例: "ReturnBasedLabeler" 表示根据收益率判断强弱
+
+labeler_window: 20
+# - 描述: 标签生成器的计算窗口大小（单位：天）
+# - 默认值: 20
+# - 可选值: 正整数，通常与数据长度相关
+# - 示例: 20 表示基于过去 20 天的收益率生成标签

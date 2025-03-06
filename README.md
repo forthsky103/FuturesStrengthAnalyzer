@@ -4,63 +4,61 @@
 
 ## 项目目录结构
 FuturesStrengthAnalyzer/
-├── data/                        # 数据文件存放目录
-│   ├── rb2505.csv              # 螺纹钢2505合约数据
-│   ├── rb2510.csv              # 螺纹钢2510合约数据
-│   ├── hc2505.csv              # 热卷2505合约数据
-├── results/                     # 结果输出目录（运行后生成）
-│   ├── combined_log.log        # 主程序综合日志（示例）
-│   ├── ml_log.log             # ML方法日志（示例）
-│   ├── scoring_log.log        # 打分法日志（示例）
-│   └── result_group_1_*.csv    # 交易建议结果文件（示例）
-├── src/                         # 源代码目录
-│   ├── init.py             # 模块初始化文件
-│   ├── config.json             # 全局配置文件（数据组、市场方向等）
-│   ├── data_processor.py       # 数据预处理模块（清洗、时间转换等）
-│   ├── logging_utils.py        # 日志配置工具
-│   ├── main.py                 # 主程序（综合运行打分法和ML）
-│   ├── recommender.py          # 交易建议生成模块（打分法、ML、DL推荐器）
-│   ├── data_acquisition/       # 数据获取模块
-│   │   ├── init.py
-│   │   └── juejin_data_downloader.py  # 从掘金量化平台下载K线和Tick数据
-│   ├── deeplearning/           # 深度学习模块
-│   │   ├── init.py
-│   │   └── evaluator.py        # DL模型（LSTM、GRU、CNN等）
-│   ├── features/               # 特征提取模块
-│   │   ├── init.py
-│   │   ├── description.md      # 35个特征的含义与作用说明
-│   │   ├── extractor.py        # 特征提取主逻辑
-│   │   ├── features.py         # 定义35个创新特征（如价格动量、波动周期等）
-│   │   └── labelers.py         # 标签生成器（基于收益率、成交量等）
-│   ├── ml/                     # 机器学习模块
-│   │   ├── init.py
-│   │   ├── main_ml.py          # ML主程序
-│   │   ├── ml_config.json      # ML配置（特征选择、模型类型等）
-│   │   ├── models.py           # 定义多种ML模型（RF、XGBoost、Stacking等）
-│   │   └── predictor.py        # ML预测器（训练与预测逻辑）
-│   ├── pca/                    # 主成分分析模块
-│   │   ├── init.py
-│   │   └── evaluator.py        # PCA评估器（基于多维特征）
-│   ├── rsi/                    # RSI对比模块
-│   │   ├── init.py
-│   │   └── evaluator.py        # （未完整实现）
-│   ├── rules/                  # 基于规则的专家系统模块
-│   │   ├── init.py
-│   │   └── evaluator.py        # 规则评估器（均线突破、成交量增加等）
-│   ├── scoring/                # 打分法模块
-│   │   ├── init.py
-│   │   ├── analyses.py         # 定义35个创新分析类（如趋势加速度、日内波动等）
-│   │   ├── evaluator.py        # 打分评估器（综合多个分析模块）
-│   │   ├── main_scoring.py     # 打分法主程序
-│   │   ├── scoring_config.json # 打分法权重配置
-│   │   └── Scoring_Analyses.md # 35个分析类的含义与作用说明
-│   ├── stats/                  # 统计方法模块
-│   │   ├── init.py
-│   │   └── evaluator.py        # 统计评估器（收益率、波动率、夏普比率等）
-│   └── timeseries/             # 时间序列分析模块
-│       ├── init.py
-│       └── evaluator.py        # 时间序列模型（ARIMA、GARCH、Holt-Winters等）
-└── README.md                    # 项目说明文档（当前文件）
+├── data/                          # 数据目录，存放合约 CSV 文件
+│   ├── SHFE.rb2510.csv           # 螺纹钢 2510 合约数据
+│   ├── SHFE.rb2505.csv           # 螺纹钢 2505 合约数据
+│   ├── SHFE.hc2505.csv           # 热卷 2505 合约数据
+│   ├── SHFE.hc2510.csv           # 热卷 2510 合约数据
+│
+├── results/                      # 结果目录，存放日志文件
+│   ├── ml_log.log                # ML 模块日志
+│   ├── scoring_log.log           # Scoring 模块日志
+│   ├── stats_log.log             # Stats 模块日志
+│   ├── rules_log.log             # Rules 模块日志（未替换时可能仍为 JSON 配置）
+│
+├── models/                       # 模型目录，存放训练后的模型文件（若有）
+│
+├── src/                          # 源代码目录
+│   ├── config.yaml               # 全局配置文件（YAML，已替换）
+│   │                             # 定义多组数据、每组的市场方向和方法
+│   │
+│   ├── ml/                       # ML 模块
+│   │   ├── main_ml.py            # ML 主文件（已替换为 YAML）
+│   │   ├── ml_config.yaml        # ML 配置文件（YAML，已替换）
+│   │   ├── predictor.py          # ML 预测器逻辑
+│   │   ├── models.py             # ML 模型定义（RandomForestModel 等）
+│   │
+│   ├── scoring/                  # Scoring 模块
+│   │   ├── main_scoring.py       # Scoring 主文件（已替换为 YAML）
+│   │   ├── scoring_config.yaml   # Scoring 配置文件（YAML，已替换）
+│   │   ├── evaluator.py          # Scoring 评估器逻辑
+│   │   ├── analyses.py           # Scoring 特征分析类
+│   │
+│   ├── stats/                    # Stats 模块
+│   │   ├── main_stats.py         # Stats 主文件（已替换为 YAML，测试版）
+│   │   ├── stats_config.yaml     # Stats 配置文件（YAML，已替换，支持动态权重）
+│   │   ├── evaluator.py          # Stats 评估器逻辑（包含动态权重调整）
+│   │
+│   ├── rules/                    # Rules 模块（未替换，仍基于 JSON）
+│   │   ├── main_rules.py         # Rules 主文件（仍使用 JSON）
+│   │   ├── rules_config.json     # Rules 配置文件（JSON，未替换）
+│   │   ├── evaluator.py          # Rules 专家系统逻辑
+│   │
+│   ├── utils/                    # 工具模块
+│   │   ├── __init__.py           # 空初始化文件
+│   │   ├── logging_utils.py      # 日志工具
+│   │   ├── data_processor.py     # 数据处理工具
+│   │   ├── feature_selector.py   # 特征选择器（支持动态加载）
+│   │   ├── market_conditions.py  # 市场条件类（动态权重调整）
+│   │   ├── recommender.py        # 推荐器（交易建议生成）
+│   │   ├── weight_generator/     # 自动权重生成器目录（假设存在）
+│   │       ├── generate_weights.py  # 权重生成逻辑
+│   │
+│   ├── features/                 # 特征模块（ML 和通用）
+│   │   ├── __init__.py           # 空初始化文件
+│   │   ├── features.py           # ML 特征定义类
+│   │   ├── extractor.py          # 特征提取器
+│   │   ├── labelers.py           # 标签生成器（ReturnBasedLabeler 等）
 
 ## 项目概述
 

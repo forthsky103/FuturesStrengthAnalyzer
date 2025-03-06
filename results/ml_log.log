@@ -1,0 +1,394 @@
+2025-03-04 17:36:56,714 - INFO - 日志配置完成
+2025-03-04 17:36:56,721 - INFO - 开始运行 ML 方法
+2025-03-04 17:36:56,724 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 17:36:56,890 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 17:41:05,995 - INFO - 日志配置完成
+2025-03-04 17:41:06,114 - INFO - 开始运行 ML 方法
+2025-03-04 17:41:06,223 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 17:41:06,512 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 17:49:34,509 - INFO - 日志配置完成
+2025-03-04 17:49:34,515 - INFO - 开始运行 ML 方法
+2025-03-04 17:49:34,530 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 17:49:34,674 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 17:50:07,031 - INFO - 日志配置完成
+2025-03-04 17:50:07,150 - INFO - 开始运行 ML 方法
+2025-03-04 17:50:07,171 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 17:50:07,354 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 18:00:43,146 - INFO - 日志配置完成
+2025-03-04 18:00:43,184 - INFO - 开始运行 ML 方法
+2025-03-04 18:00:43,228 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 18:00:43,429 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 18:00:43,443 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-04 18:11:22,648 - INFO - 日志配置完成
+2025-03-04 18:11:22,655 - INFO - 开始运行 ML 方法
+2025-03-04 18:11:22,657 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 18:11:22,855 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 18:11:22,862 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-04 18:11:23,031 - INFO - 提取特征完成，共 9 个特征
+2025-03-04 18:11:23,067 - INFO - 使用 Xgboost 模型
+2025-03-04 18:24:30,031 - INFO - 日志配置完成
+2025-03-04 18:24:30,055 - INFO - 开始运行 ML 方法
+2025-03-04 18:24:30,062 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-04 18:24:30,308 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-04 18:24:30,322 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-04 18:24:30,409 - INFO - 提取特征完成，共 9 个特征
+2025-03-04 18:24:30,415 - INFO - 使用 Xgboost 模型
+2025-03-05 10:42:31,092 - INFO - 日志配置完成
+2025-03-05 10:42:31,106 - INFO - 开始运行 ML 方法
+2025-03-05 10:42:31,109 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 10:42:31,260 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 10:42:31,269 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 10:42:31,330 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 10:42:31,374 - INFO - 使用 Xgboost 模型
+2025-03-05 10:48:31,088 - INFO - 日志配置完成
+2025-03-05 10:48:31,090 - INFO - 开始运行 ML 方法
+2025-03-05 10:48:31,093 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 10:48:31,179 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 10:48:31,182 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 10:48:31,234 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 10:48:31,240 - INFO - 使用 Xgboost 模型
+2025-03-05 10:59:03,305 - INFO - 日志配置完成
+2025-03-05 10:59:03,322 - INFO - 开始运行 ML 方法
+2025-03-05 10:59:03,347 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 10:59:03,466 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 10:59:03,472 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 10:59:03,510 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2510           object
+dtype: object
+2025-03-05 10:59:03,559 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2505           object
+dtype: object
+2025-03-05 10:59:03,607 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_hc2505           object
+dtype: object
+2025-03-05 10:59:03,618 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 10:59:03,624 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2510           object
+price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2505           object
+price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_hc2505           object
+dtype: object
+2025-03-05 10:59:03,631 - INFO - 使用 Xgboost 模型
+2025-03-05 10:59:19,332 - INFO - 日志配置完成
+2025-03-05 10:59:19,334 - INFO - 开始运行 ML 方法
+2025-03-05 10:59:19,336 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 10:59:19,407 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 10:59:19,418 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 10:59:19,463 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2510           object
+dtype: object
+2025-03-05 10:59:19,489 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2505           object
+dtype: object
+2025-03-05 10:59:19,514 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_hc2505           object
+dtype: object
+2025-03-05 10:59:19,530 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 10:59:19,536 - DEBUG - features_df 列类型: price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2510           object
+price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_rb2505           object
+price_momentum_20     float64
+volume_pressure_20    float64
+price_velocity_10     float64
+label_hc2505           object
+dtype: object
+2025-03-05 10:59:19,543 - INFO - 使用 Xgboost 模型
+2025-03-05 11:11:33,210 - INFO - 日志配置完成
+2025-03-05 11:11:33,211 - INFO - 开始运行 ML 方法
+2025-03-05 11:11:33,214 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 11:11:33,301 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 11:11:33,304 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 11:11:33,320 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 11:11:33,337 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 11:11:33,367 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 11:11:33,374 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 11:11:33,379 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 11:11:33,388 - INFO - 使用 Xgboost 模型
+2025-03-05 11:11:35,743 - INFO - 模型训练完成
+2025-03-05 11:48:36,459 - INFO - 日志配置完成
+2025-03-05 11:48:36,461 - INFO - 开始运行 ML 方法
+2025-03-05 11:48:36,466 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 11:48:36,539 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 11:48:36,545 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 11:48:36,560 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 11:48:36,582 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 11:48:36,601 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 11:48:36,608 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 11:48:36,613 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 11:48:36,621 - INFO - 使用 Xgboost 模型
+2025-03-05 11:48:37,796 - INFO - 模型训练完成
+2025-03-05 11:48:37,896 - INFO - 预测完成
+2025-03-05 13:54:23,173 - INFO - 日志配置完成
+2025-03-05 13:54:23,174 - INFO - 开始运行 ML 方法
+2025-03-05 13:54:23,177 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 13:54:23,282 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 13:54:23,287 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 13:54:23,319 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 13:54:23,348 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 13:54:23,378 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:54:23,384 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 13:54:23,394 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:54:23,402 - INFO - 使用 Xgboost 模型
+2025-03-05 13:54:23,846 - INFO - 模型训练完成
+2025-03-05 13:54:23,938 - INFO - 预测完成
+2025-03-05 13:54:24,027 - INFO - 交易建议生成（模式: probability）: 做多 rb2510（预测: strong），做空 hc2505（预测: weak）
+2025-03-05 13:54:24,037 - INFO - 结果已保存至 d:\mywork\wondertrader\pandora\FuturesStrengthAnalyzer\results/ml_results_group_0.csv
+2025-03-05 13:54:24,039 - INFO - 处理第 2 组数据: ['hc2510.csv', 'rb2510.csv', 'hc2505.csv'], 市场方向: down
+2025-03-05 13:55:41,531 - INFO - 日志配置完成
+2025-03-05 13:55:41,532 - INFO - 开始运行 ML 方法
+2025-03-05 13:55:41,534 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 13:55:41,605 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 13:55:41,606 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 13:55:41,615 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 13:55:41,640 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 13:55:41,660 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:55:41,673 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 13:55:41,677 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:55:41,682 - INFO - 使用 Xgboost 模型
+2025-03-05 13:55:42,063 - INFO - 模型训练完成
+2025-03-05 13:55:42,150 - INFO - 预测完成
+2025-03-05 13:55:42,226 - INFO - 交易建议生成（模式: probability）: 做多 rb2510（预测: strong），做空 hc2505（预测: weak）
+2025-03-05 13:55:42,241 - INFO - 结果已保存至 d:\mywork\wondertrader\pandora\FuturesStrengthAnalyzer\results/ml_results_group_0.csv
+2025-03-05 13:55:42,242 - INFO - ML 方法运行完成
+2025-03-05 13:56:43,658 - INFO - 日志配置完成
+2025-03-05 13:56:43,659 - INFO - 开始运行 ML 方法
+2025-03-05 13:56:43,667 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 13:56:43,812 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 13:56:43,826 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 13:56:43,883 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 13:56:43,905 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 13:56:43,977 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:56:43,988 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 13:56:43,999 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 13:56:44,006 - INFO - 使用 Random Forest 模型
+2025-03-05 13:56:46,962 - INFO - 模型训练完成
+2025-03-05 13:56:47,320 - INFO - 预测完成
+2025-03-05 13:56:47,659 - INFO - 交易建议生成（模式: probability）: 做多 rb2510（预测: strong），做空 hc2505（预测: weak）
+2025-03-05 13:56:47,667 - INFO - 结果已保存至 d:\mywork\wondertrader\pandora\FuturesStrengthAnalyzer\results/ml_results_group_0.csv
+2025-03-05 13:56:47,678 - INFO - ML 方法运行完成
+2025-03-05 14:08:52,906 - INFO - 日志配置完成
+2025-03-05 14:08:52,907 - INFO - 开始运行 ML 方法
+2025-03-05 14:08:52,910 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 14:08:52,992 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 14:08:52,994 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 14:08:53,018 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 14:08:53,052 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 14:08:53,076 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 14:08:53,082 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 14:08:53,085 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 14:08:53,093 - INFO - 使用 Random Forest 模型
+2025-03-05 14:08:55,295 - INFO - 模型训练完成
+2025-03-05 14:08:55,554 - INFO - 预测完成
+2025-03-05 14:08:55,883 - INFO - 交易建议生成（模式: probability）: 做多 rb2510（预测: strong），做空 hc2505（预测: weak）
+2025-03-05 14:08:55,912 - INFO - 结果已保存至 d:\mywork\wondertrader\pandora\FuturesStrengthAnalyzer\results/ml_results_group_0.csv
+2025-03-05 14:08:55,917 - INFO - ML 方法运行完成
+2025-03-05 17:21:21,624 - INFO - 日志配置完成
+2025-03-05 17:21:21,625 - INFO - 开始运行 ML 方法
+2025-03-05 17:21:21,627 - INFO - 处理第 1 组数据: ['rb2510.csv', 'rb2505.csv', 'hc2505.csv'], 市场方向: up
+2025-03-05 17:21:21,721 - INFO - 数据加载完成，时间对齐至重叠期
+2025-03-05 17:21:21,723 - INFO - 特征筛选完成，选出 3 个特征: ['PriceMomentumFeature', 'VolumePressureFeature', 'PriceVelocityFeature']
+2025-03-05 17:21:21,737 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+dtype: object
+2025-03-05 17:21:21,761 - DEBUG - features_df 列类型: price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+dtype: object
+2025-03-05 17:21:21,783 - DEBUG - features_df 列类型: price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 17:21:21,792 - INFO - 提取特征完成，共 9 个特征
+2025-03-05 17:21:21,797 - DEBUG - features_df 列类型: price_momentum_20_rb2510     float64
+volume_pressure_20_rb2510    float64
+price_velocity_10_rb2510     float64
+label_rb2510                  object
+price_momentum_20_rb2505     float64
+volume_pressure_20_rb2505    float64
+price_velocity_10_rb2505     float64
+label_rb2505                  object
+price_momentum_20_hc2505     float64
+volume_pressure_20_hc2505    float64
+price_velocity_10_hc2505     float64
+label_hc2505                  object
+dtype: object
+2025-03-05 17:21:21,804 - INFO - 使用 Random Forest 模型
+2025-03-05 17:21:21,817 - DEBUG - Contract rb2510 标签分布: {0: 46, 1: 20}
+2025-03-05 17:21:22,527 - DEBUG - Contract rb2505 标签分布: {0: 48, 1: 18}
+2025-03-05 17:21:23,189 - DEBUG - Contract hc2505 标签分布: {0: 53, 1: 13}
+2025-03-05 17:21:23,816 - INFO - 模型训练完成
+2025-03-05 17:21:24,021 - INFO - 交易建议生成（模式: probability）: 做多 rb2510（预测: strong），做空 hc2505（预测: weak）
+2025-03-05 17:21:24,035 - INFO - 结果已保存至 d:\mywork\wondertrader\pandora\FuturesStrengthAnalyzer\results/ml_results_group_0.csv
+2025-03-05 17:21:24,046 - INFO - ML 方法运行完成

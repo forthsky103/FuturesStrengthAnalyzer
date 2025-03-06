@@ -1,0 +1,16 @@
+# 全局配置文件
+# 数据组列表，每组包含合约文件、市场方向和评估方法，用于指定不同组的评估环境
+data_groups:
+  # 第一组数据，使用 Scoring 方法，市场看涨
+  - files:
+      - SHFE.rb2510.csv  # 螺纹钢 2510 合约
+      - SHFE.rb2505.csv  # 螺纹钢 2505 合约
+    market_direction: up  # 看涨市场，影响权重和建议
+    method: scoring       # 使用 Scoring 方法评估
+
+  # 第二组数据，使用 Stats 方法，市场看跌
+  - files:
+      - SHFE.hc2505.csv  # 热卷 2505 合约
+      - SHFE.hc2510.csv  # 热卷 2510 合约
+    market_direction: down  # 看跌市场，影响权重和建议
+    method: stats          # 使用 Stats 方法评估

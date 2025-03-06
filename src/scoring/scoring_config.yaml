@@ -1,0 +1,86 @@
+# src/scoring/scoring_config.yaml
+
+# 数据目录配置
+data_dir: "data"
+# - 描述: 指定数据文件所在的目录，路径相对于项目根目录（FuturesStrengthAnalyzer/）。
+# - 默认值: "data"，即 FuturesStrengthAnalyzer/data/
+# - 示例: 可改为 "input/data" 或绝对路径 "D:/mydata/"
+
+# 日志目录配置
+log_dir: "results"
+# - 描述: 指定日志文件存放的目录，路径相对于项目根目录。
+# - 默认值: "results"，即 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "logs" 或绝对路径 "D:/logs/"
+
+# 结果保存目录配置
+results_dir: "results"
+# - 描述: 指定交易建议结果 CSV 文件保存的目录，路径相对于项目根目录。
+# - 默认值: "results"，即 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "output" 或绝对路径 "D:/output/"
+
+# 数据组列表，每组定义一组合约文件和对应的市场方向
+data_groups:
+  - files:
+      - rb2510.csv
+      - rb2505.csv
+      - hc2505.csv
+    market_direction: up
+    # - files: 列表，指定该组分析的合约数据文件名（无需包含路径，路径由 data_dir 指定）。
+    #   - 示例: ["rb2510.csv", "rb2505.csv"] 表示分析螺纹钢 2510 和 2505 两个合约。
+    # - market_direction: 字符串，指定市场方向，影响交易建议（"up" 表示看涨，"down" 表示看跌，其他值表示震荡）。
+    #   - 可选值: "up", "down", 或其他（如 "neutral"）。
+    #   - 示例: "up" 表示建议做多最强合约、做空最弱合约。
+  - files:
+      - rb2510.csv
+      - rb2505.csv
+      - hc2505.csv
+    market_direction: down
+    # - 注释同上，表示第二组数据，使用相同文件但按看跌方向分析。
+    # - 注意: 如果需要不同合约，可调整 files 列表，如 ["hc2510.csv", "rb2510.csv"]。
+
+# 特征选择配置
+enable_feature_selection: true
+# - 描述: 布尔值，控制是否启用自动特征选择。
+# - 默认值: 无（建议明确指定）。
+# - 可选值:
+#   - true: 使用 SelectKBest 自动选择指定数量的特征（由 feature_count 控制）。
+#   - false: 使用 manual_features 或全部特征。
+# - 示例: true 表示启用自动选择，false 表示手动指定或全选。
+
+feature_count: 10
+# - 描述: 整数，指定自动特征选择时选取的特征数量（仅当 enable_feature_selection 为 true 时生效）。
+# - 默认值: 无（建议指定）。
+# - 可选值: 1 到特征总数（35，若使用 analyses.py 的所有特征）。
+# - 示例: 10 表示选择 10 个最相关的特征（5 个与“强”相关，5 个与“弱”相关）。
+
+manual_features:
+  - PriceTrendAccelerationAnalysis
+  - IntradayVolatilityAnalysis
+  - PriceSkewnessAnalysis
+# - 描述: 列表，指定手动选择的特征名称（仅当 enable_feature_selection 为 false 时生效）。
+# - 默认值: 空列表（若为空且 enable_feature_selection 为 false，则使用所有特征）。
+# - 可选值: analyses.py 中定义的特征类名，如 "PriceSkewnessAnalysis"。
+# - 示例: ["PriceTrendAccelerationAnalysis"] 表示只使用价格趋势加速度分析。
+
+# 特征权重配置
+weights:
+  PriceTrendAccelerationAnalysis: 1.0
+  IntradayVolatilityAnalysis: 1.0
+  PriceSkewnessAnalysis: 1.0
+# - 描述: 字典，指定每个特征的权重，用于 StrengthEvaluator 计算加权评分。
+# - 默认值: 未指定的特征默认权重为 1.0。
+# - 可选值: 浮点数，通常在 0.0 到 2.0 之间。
+# - 示例: PriceTrendAccelerationAnalysis: 2.0 表示该特征得分权重翻倍。
+
+# 标签生成配置
+labeler_type: ReturnBasedLabeler
+# - 描述: 字符串，指定标签生成器的类型，用于自动特征选择（enable_feature_selection: true 时）。
+# - 默认值: "ReturnBasedLabeler"（基于收益率的标签生成器）。
+# - 可选值: labelers.py 中定义的类名，如 "VolumeBasedLabeler", "VolatilityBasedLabeler"。
+# - 示例: "ReturnBasedLabeler" 表示根据收益率判断强弱。
+
+labeler_window: 20
+# - 描述: 整数，指定标签生成器计算窗口的大小（单位：天）。
+# - 默认值: 20。
+# - 可选值: 正整数，通常与数据长度相关。
+# - 示例: 20 表示基于过去 20 天的收益率生成标签。

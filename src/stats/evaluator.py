@@ -1,10 +1,12 @@
 # src/stats/evaluator.py
 from abc import ABC, abstractmethod
 from typing import List, Dict, Tuple
+import os
 import pandas as pd
 import numpy as np
+import yaml
 import logging
-from ..utils.market_conditions import MarketCondition  # 调整为完整路径
+from ..utils.market_conditions import MarketCondition
 
 class StatMetric(ABC):
     """统计指标基类"""
@@ -12,7 +14,7 @@ class StatMetric(ABC):
     def compute(self, data: pd.DataFrame) -> Tuple[float, str]:
         """计算统计指标
         Args:
-            data (pd.DataFrame): 合约数据
+            data (pd.DataFrame): 合约数据，至少包含基础列（如 close）
         Returns:
             Tuple[float, str]: (指标值, 解释)
         """
@@ -139,32 +141,34 @@ class StatsEvaluator:
         logging.info(f"动态调整权重: {self.weights}")
         return self.weights
 
-    def evaluate(self, datasets: List[pd.DataFrame], condition_map: Dict[str, type], config_path: str = "stats_config.json") -> Tuple[Dict, str, str]:
+    def evaluate(self, datasets: List[pd.DataFrame], condition_map: Dict[str, type], config_path: str = "stats_config.yaml") -> Tuple[Dict, str, str]:
         """评估所有合约的强弱
         Args:
             datasets (List[pd.DataFrame]): 数据集列表
             condition_map (Dict[str, type]): 市场状态类映射
-            config_path (str): 配置文件路径
+            config_path (str): 配置文件路径，默认为 stats_config.yaml
         Returns:
             Tuple[Dict, str, str]: (结果字典, 最强合约, 最弱合约)
         """
-        with open(config_path, "r") as f:
-            config = json.load(f)
-        
+        config_full_path = os.path.join(os.path.dirname(__file__), config_path)
+        with open(config_full_path, "r", encoding='utf-8') as f:
+            config = yaml.safe_load(f)
+
         conditions = [condition_map[cond["type"]](cond["adjustments"]) for cond in config.get("market_conditions", [])]
-        
+
         if config.get("auto_weights", False):
-            from ..weight_generator.generate_weights import WeightGenerator  # 调整为完整路径
+            from ..weight_generator.generate_weights import WeightGenerator
             generator = WeightGenerator()
             self.base_weights = generator.generate("stats", datasets, self.metrics)
             self.weights = self.base_weights.copy()
-            generator.update_config("stats", self.base_weights, config_path)
+            if config.get("update_config", True):
+                generator.update_config("stats", self.base_weights, config_full_path)
         else:
             self.base_weights = config.get("weights", {m.__class__.__name__: 1.0 for m in self.metrics})
             self.weights = self.base_weights.copy()
 
         self.adjust_weights(datasets, conditions)
-        
+
         results = {}
         for i, data in enumerate(datasets):
             contract = f"contract{i+1}"

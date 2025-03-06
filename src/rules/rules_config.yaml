@@ -1,0 +1,222 @@
+# src/rules/rules_config.yaml
+
+# 数据目录配置
+data_dir: "data"
+# - 描述: 指定数据文件所在的目录，所有数据组的文件将从此路径加载
+# - 默认值: "data"，表示项目根目录下的 FuturesStrengthAnalyzer/data/
+# - 示例: 可改为 "input/data" 或绝对路径 "D:/mydata/"
+
+# 日志目录配置
+log_dir: "results"
+# - 描述: 指定日志文件存放的目录，例如 rules_log.log
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "logs" 或绝对路径 "D:/logs/"
+
+# 结果保存目录配置
+results_dir: "results"
+# - 描述: 指定交易建议结果 CSV 文件保存的目录，例如 result_group_*.csv
+# - 默认值: "results"，表示项目根目录下的 FuturesStrengthAnalyzer/results/
+# - 示例: 可改为 "output" 或绝对路径 "D:/output/"
+
+# 数据组配置
+data_groups:
+  - files:
+      - "rb2510.csv"
+      - "rb2505.csv"
+      - "hc2505.csv"
+    market_direction: "up"
+    # - files: 列表，指定该组分析的合约数据文件名（无需包含路径，由 data_dir 指定）
+    #   - 示例: ["rb2510.csv"] 表示分析螺纹钢 2510 合约
+    # - market_direction: 字符串，指定市场方向，影响交易建议
+    #   - 可选值: "up"（看涨，建议做多最强、做空最弱），"down"（看跌，反之），其他（如 "neutral" 表示震荡）
+    #   - 示例: "up" 表示看涨市场
+  - files:
+      - "rb2505.csv"
+      - "rb2510.csv"
+      - "hc2505.csv"
+    market_direction: "down"
+    # - 注释同上，表示第二组数据，按看跌方向分析
+
+# 特征选择配置
+enable_feature_selection: false
+# - 描述: 是否启用自动特征选择（由 RulesFeatureSelector 基于触发频率筛选规则）
+# - 默认值: 无（建议明确指定）
+# - 可选值:
+#   - true: 自动选择 feature_count 个规则
+#   - false: 使用 manual_features 或全部规则
+# - 示例: true 表示启用自动选择
+
+feature_count: 10
+# - 描述: 自动选择规则时，保留的规则数量（仅当 enable_feature_selection 为 true 时生效）
+# - 默认值: 无（建议指定）
+# - 可选值: 1 到规则总数（当前 13 个规则）
+# - 示例: 10 表示选择触发频率最高的 10 个规则
+
+manual_features:
+  - "BreakoutMARule"
+  - "VolumeIncreaseRule"
+  - "PositionTrendRule"
+  - "UptrendRule"
+# - 描述: 手动指定的规则列表（仅当 enable_feature_selection 为 false 时生效）
+# - 默认值: 空列表（若为空且 enable_feature_selection 为 false，则使用所有规则）
+# - 可选值: evaluator.py 中定义的规则类名，如 "BreakoutMARule"
+# - 示例: 用于确保特定规则（如依赖关系中的规则）始终被选中
+
+# 规则及其参数配置
+rules:
+  BreakoutMARule:
+    window: 20
+    volatility_factor: 0.01
+    # - window: 计算均线的窗口大小（单位：天）
+    # - volatility_factor: 波动率调整因子，影响突破阈值
+  VolumeIncreaseRule:
+    window: 20
+    # - window: 计算成交量变化的窗口大小
+  PositionTrendRule:
+    window: 20
+    # - window: 计算持仓量变化的窗口大小
+  VolatilityExpansionRule:
+    window: 20
+    # - window: 计算波动率（ATR）的窗口大小
+  UptrendRule:
+    short_window: 5
+    mid_window: 20
+    long_window: 50
+    # - short_window: 短期均线窗口
+    # - mid_window: 中期均线窗口
+    # - long_window: 长期均线窗口
+  RSIAbove50Rule: {}
+    # - 无额外参数，RSI 使用固定 14 天窗口（在规则内定义）
+  MACDPositiveAndAboveSignalRule: {}
+    # - 无额外参数，MACD 使用默认参数（在规则内定义）
+  PriceAboveBollingerUpperRule:
+    window: 20
+    # - window: 计算布林带的窗口大小
+  TrendReversalRule:
+    window: 20
+    # - window: 计算均线和 RSI 的窗口大小（RSI 固定 14 天）
+  VolumeSpikeRule:
+    window: 20
+    threshold: 2.0
+    # - window: 计算均量的窗口大小
+    # - threshold: 成交量倍数阈值
+  PriceBreakoutHighRule:
+    window: 20
+    # - window: 检测前高点的窗口大小
+  MACDGoldenCrossRule: {}
+    # - 无额外参数，MACD 使用默认参数（在规则内定义）
+  VolatilityContractionRule:
+    window: 5
+    # - window: 检查波动率缩小的窗口大小
+
+# 规则初始权重配置
+weights:
+  BreakoutMARule: 1.0
+  VolumeIncreaseRule: 0.8
+  PositionTrendRule: 0.7
+  VolatilityExpansionRule: 0.6
+  UptrendRule: 1.5
+  RSIAbove50Rule: 1.2
+  MACDPositiveAndAboveSignalRule: 1.5
+  PriceAboveBollingerUpperRule: 1.0
+  TrendReversalRule: 1.2
+  VolumeSpikeRule: 0.9
+  PriceBreakoutHighRule: 1.0
+  MACDGoldenCrossRule: 1.3
+  VolatilityContractionRule: 0.8
+# - 描述: 指定每个规则的初始权重（auto_weights: false 时生效，或 update_config: false 时保留）
+# - 默认值: 未指定的规则权重为 1.0
+# - 可选值: 浮点数，通常在 0.0 到 2.0 之间
+# - 示例: "UptrendRule: 1.5" 表示上升趋势规则权重更高
+
+# 是否自动生成权重
+auto_weights: true
+# - 描述: 是否使用 WeightGenerator 动态生成权重
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 根据规则触发准确率动态生成权重
+#   - false: 使用 weights 中指定的静态权重
+# - 示例: true 表示启用动态权重
+
+# 是否更新配置文件
+update_config: false
+# - 描述: 动态生成权重后，是否将结果更新到配置文件
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 更新配置文件（根据 update_weights_only 决定更新范围）
+#   - false: 不更新配置文件，仅在内存中使用动态权重
+# - 示例: true 表示将动态权重写入配置文件
+
+# 是否仅更新权重部分
+update_weights_only: true
+# - 描述: 更新配置文件时，是否仅修改 weights 部分，保持其他配置不变
+# - 默认值: 无（建议指定）
+# - 可选值:
+#   - true: 仅更新 weights，保留其他配置（如 rules, dependencies）
+#   - false: 覆盖整个配置文件（可能导致其他配置丢失）
+# - 示例: true 表示只更新 weights 部分
+
+# 市场状态配置
+market_conditions:
+  - type: "HighVolatilityCondition"
+    adjustments:
+      VolatilityExpansionRule: 1.5
+      PriceAboveBollingerUpperRule: 1.5
+      VolatilityContractionRule: 1.2
+    # - type: 市场状态类型，需与 market_conditions.py 中的类名匹配
+    # - adjustments: 当条件满足时，调整指定规则的权重（乘法因子）
+    #   - 示例: VolatilityExpansionRule: 1.5 表示高波动时权重增加 50%
+  - type: "TrendMarketCondition"
+    adjustments:
+      UptrendRule: 1.3
+      MACDPositiveAndAboveSignalRule: 1.3
+      PriceBreakoutHighRule: 1.3
+      MACDGoldenCrossRule: 1.3
+    # - 注释同上，适用于趋势市场
+  - type: "RangeMarketCondition"
+    adjustments:
+      RSIAbove50Rule: 1.2
+      TrendReversalRule: 1.2
+      VolumeSpikeRule: 1.2
+    # - 注释同上，适用于震荡市场
+
+# 规则依赖关系配置
+dependencies:
+  BreakoutMARule:
+    requires:
+      - "VolumeIncreaseRule"
+      - "PositionTrendRule"
+    logic: "or"
+    boost: 1.5
+    # - requires: 依赖的规则列表
+    # - logic: 依赖逻辑，可选 "and"（全满足）、"or"（任一满足）、"not"（全不满足）
+    # - boost: 当依赖满足时，得分增强倍数
+    # - 示例: 表示若成交量或持仓量任一满足，BreakoutMARule 得分增加 50%
+  UptrendRule:
+    requires:
+      - rule: "MACDPositiveAndAboveSignalRule"
+        requires:
+          - "RSIAbove50Rule"
+        logic: "and"
+    logic: "and"
+    boost: 1.3
+    # - 示例: 表示 UptrendRule 依赖 MACDPositiveAndAboveSignalRule，且后者依赖 RSIAbove50Rule
+  RSIAbove50Rule:
+    requires:
+      - "TrendReversalRule"
+    logic: "not"
+    boost: 0.5
+    # - 示例: 表示若 TrendReversalRule 不满足，RSIAbove50Rule 得分增强 50%
+
+# 标签生成配置（用于自动特征选择和动态权重）
+labeler_type: "ReturnBasedLabeler"
+# - 描述: 指定标签生成器类型，用于自动选择规则和生成动态权重
+# - 默认值: "ReturnBasedLabeler"（基于收益率）
+# - 可选值: labelers.py 中定义的类名，如 "VolumeBasedLabeler", "VolatilityBasedLabeler"
+# - 示例: "ReturnBasedLabeler" 表示根据收益率判断强弱
+
+labeler_window: 20
+# - 描述: 标签生成器的计算窗口大小（单位：天）
+# - 默认值: 20
+# - 可选值: 正整数，通常与数据长度相关
+# - 示例: 20 表示基于过去 20 天的收益率生成标签
